@@ -26,33 +26,28 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         adapter = ConversationAdapter { conv ->
             startActivity(Intent(this, ChatActivity::class.java).apply {
                 putExtra("CONVERSATION_ID", conv.id)
                 putExtra("OTHER_USER_ID", conv.otherUserId)
             })
         }
-
         findViewById<RecyclerView>(R.id.recyclerConversations).apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
             adapter = this@MainActivity.adapter
         }
-
         findViewById<FloatingActionButton>(R.id.fabNewChat).setOnClickListener {
             startActivity(Intent(this, ContactsActivity::class.java))
         }
-
         vm.conversations.observe(this) { adapter.submitList(it) }
-        vm.loading.observe(this) { findViewById<ProgressBar>(R.id.progress).visibility = if (it) View.VISIBLE else View.GONE }
-
+        vm.loading.observe(this) {
+            findViewById<ProgressBar>(R.id.progress).visibility = if (it) View.VISIBLE else View.GONE
+        }
         vm.loadConversations()
-
         lifecycleScope.launch {
             val token = session.getAccessToken() ?: return@launch
             vm.connectSocket(token)
         }
     }
-
     override fun onResume() { super.onResume(); vm.loadConversations() }
 }

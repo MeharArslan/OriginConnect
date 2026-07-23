@@ -24,8 +24,8 @@ class ConversationAdapter(private val onClick: (Conversation) -> Unit) :
 
     override fun onBindViewHolder(holder: VH, position: Int) {
         val conv = getItem(position)
-        holder.txtName.text = conv.otherUserId.take(8) // Will be replaced with contact name
-        holder.txtSnippet.text = conv.lastMessageContent ?: "No messages yet"
+        holder.txtName.text = conv.otherUserId.take(8)
+        holder.txtSnippet.text = conv.lastMessageContent ?: ""
         holder.txtTime.text = conv.lastMessageAt?.let {
             SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(it))
         } ?: ""
