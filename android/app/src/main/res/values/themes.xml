@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.OriginConnect" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/oc_primary</item>
+        <item name="colorPrimaryDark">@color/oc_primary_dark</item>
+        <item name="colorAccent">@color/oc_primary</item>
+        <item name="android:windowBackground">@color/oc_bg</item>
+        <item name="android:statusBarColor">@color/oc_bg</item>
+    </style>
+</resources>
