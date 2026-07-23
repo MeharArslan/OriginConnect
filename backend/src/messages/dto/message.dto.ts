@@ -1,5 +1,5 @@
 import { IsString, IsEnum, IsOptional, IsNumber, IsUUID } from 'class-validator';
-import { MessageType } from '../database/entities/message.entity';
+import { MessageType } from '../../database/entities/message.entity';
 export class SendMessageDto {
   @IsUUID() receiverId:string; @IsEnum(MessageType) type:MessageType;
   @IsOptional() @IsString() content?:string; @IsOptional() @IsString() mediaUrl?:string;

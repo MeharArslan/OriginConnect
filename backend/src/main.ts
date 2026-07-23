@@ -6,7 +6,6 @@ import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/http-exception.filter';
 import * as compression from 'compression';
 import helmet from 'helmet';
-import { join } from 'path';
 async function bootstrap(){
   const logger=new Logger('Bootstrap');
   const app=await NestFactory.create(AppModule,{logger:['log','warn','error']});
@@ -15,7 +14,6 @@ async function bootstrap(){
   app.enableCors({origin:'*',methods:['GET','POST','PUT','DELETE','PATCH'],allowedHeaders:['Content-Type','Authorization']});
   app.useGlobalPipes(new ValidationPipe({whitelist:true,transform:true,forbidNonWhitelisted:false}));
   app.useGlobalFilters(new AllExceptionsFilter());
-  app.useStaticAssets(join(process.cwd(),'uploads'),{prefix:'/uploads'});
   app.setGlobalPrefix('api/v1');
   await app.listen(port);
   logger.log('OriginConnect running on port '+port);
