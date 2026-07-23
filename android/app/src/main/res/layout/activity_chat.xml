@@ -28,7 +28,6 @@
         <EditText android:id="@+id/etMessage"
             android:layout_width="0dp" android:layout_height="wrap_content"
             android:layout_weight="1" android:background="@drawable/bg_input"
-            android:hint="Message" android:hintTextColor="#8E8E93"
             android:textColor="#FFFFFF" android:paddingHorizontal="16dp"
             android:paddingVertical="12dp" android:maxLines="4"
             android:inputType="textMultiLine" android:layout_marginEnd="8dp"/>
