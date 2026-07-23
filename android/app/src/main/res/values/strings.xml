@@ -1,5 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">OriginConnect</string>
+    <string name="welcome_title">Connect privately,
+without limits.</string>
+    <string name="welcome_desc">End-to-end encrypted messaging
+for everyone.</string>
+    <string name="agree_continue">Agree &amp; Continue</string>
+    <string name="terms_privacy">By tapping Agree &amp; Continue, you agree to our
+Terms of Service and Privacy Policy</string>
+    <string name="enter_phone">Enter your phone number</string>
+    <string name="phone_desc">OriginConnect will send an SMS to verify
+your phone number.</string>
+    <string name="verify_code">Verify your number</string>
+    <string name="otp_sent_to">We sent a 6-digit code to</string>
+    <string name="resend_in">Resend code in %1$d seconds</string>
+    <string name="resend_code">Resend code</string>
+    <string name="wrong_number">Wrong number?</string>
+    <string name="profile_title">Your profile</string>
+    <string name="profile_desc">Please provide your name and an optional profile photo</string>
+    <string name="your_name">Your name</string>
+    <string name="about_optional">About (optional)</string>
+    <string name="continue_btn">Continue</string>
+    <string name="select_country">Select country</string>
+    <string name="search_country">Search country</string>
+    <string name="add_photo">Add photo</string>
     <string name="appbar_scrolling_view_behavior">com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior</string>
 </resources>

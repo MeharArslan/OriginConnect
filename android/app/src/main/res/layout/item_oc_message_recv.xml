@@ -6,11 +6,10 @@
     <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:orientation="vertical" android:background="@drawable/bg_recv"
         android:paddingHorizontal="12dp" android:paddingVertical="8dp" android:maxWidth="260dp">
-        <TextView android:id="@+id/txtBody"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:textColor="#FFFFFF" android:textSize="15sp"/>
-        <TextView android:id="@+id/txtTime"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:textColor="#CC8E8E93" android:textSize="11sp" android:layout_marginTop="2dp"/>
+        <TextView android:id="@+id/txtBody" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:textColor="#FFFFFF" android:textSize="15sp"/>
+        <TextView android:id="@+id/txtTime" android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:textColor="#CC8E8E93"
+            android:textSize="11sp" android:layout_marginTop="2dp"/>
     </LinearLayout>
 </LinearLayout>

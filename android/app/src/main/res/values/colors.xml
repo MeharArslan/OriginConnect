@@ -2,11 +2,19 @@
 <resources>
     <color name="oc_primary">#1B6EF3</color>
     <color name="oc_primary_dark">#1558D6</color>
+    <color name="oc_primary_light">#4A90F5</color>
+    <color name="oc_secondary">#00C853</color>
     <color name="oc_sent">#1B6EF3</color>
     <color name="oc_recv">#2C2C2E</color>
     <color name="oc_bg">#0A0A0A</color>
     <color name="oc_surface">#1C1C1E</color>
+    <color name="oc_surface2">#2C2C2E</color>
     <color name="oc_text_primary">#FFFFFF</color>
     <color name="oc_text_secondary">#8E8E93</color>
+    <color name="oc_text_hint">#48484A</color>
+    <color name="oc_divider">#2C2C2E</color>
+    <color name="oc_error">#FF453A</color>
     <color name="oc_badge">#FF3B30</color>
+    <color name="oc_green">#30D158</color>
+    <color name="oc_overlay">#80000000</color>
 </resources>

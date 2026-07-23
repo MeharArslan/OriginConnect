@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:background="@color/oc_bg">
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="56dp"
+        android:gravity="center_vertical" android:paddingHorizontal="8dp">
+        <ImageButton android:id="@+id/btnBack"
+            android:layout_width="48dp" android:layout_height="48dp"
+            android:src="@drawable/ic_arrow_back"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="12dp"/>
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:text="@string/select_country"
+            android:textSize="20sp" android:textStyle="bold"
+            android:textColor="@color/oc_text_primary" android:layout_marginStart="8dp"/>
+    </LinearLayout>
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="52dp"
+        android:orientation="horizontal" android:gravity="center_vertical"
+        android:marginHorizontal="16dp" android:background="@drawable/bg_surface_card"
+        android:paddingHorizontal="16dp" android:layout_marginBottom="8dp">
+        <ImageView android:layout_width="20dp" android:layout_height="20dp"
+            android:src="@drawable/ic_search" android:layout_marginEnd="12dp"/>
+        <EditText android:id="@+id/etSearch"
+            android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:background="@null"
+            android:hint="@string/search_country"
+            android:textColorHint="@color/oc_text_secondary"
+            android:textColor="@color/oc_text_primary"
+            android:textSize="15sp" android:inputType="text"
+            android:imeOptions="actionSearch"/>
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerCountries"
+        android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1"/>
+</LinearLayout>

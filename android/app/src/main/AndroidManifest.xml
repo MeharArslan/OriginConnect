@@ -17,15 +17,24 @@
         android:theme="@style/Theme.OriginConnect"
         android:usesCleartextTraffic="true">
 
-        <activity
-            android:name=".ui.auth.AuthActivity"
-            android:exported="true"
-            android:windowSoftInputMode="adjustResize">
+
+        <activity android:name=".ui.auth.SplashActivity" android:exported="true"
+            android:theme="@style/Theme.OriginConnect">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity android:name=".ui.auth.WelcomeActivity" android:exported="false"
+            android:theme="@style/Theme.OriginConnect"/>
+        <activity android:name=".ui.auth.PhoneActivity" android:exported="false"
+            android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.OriginConnect"/>
+        <activity android:name=".ui.auth.OtpActivity" android:exported="false"
+            android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.OriginConnect"/>
+        <activity android:name=".ui.auth.CountryActivity" android:exported="false"
+            android:theme="@style/Theme.OriginConnect"/>
+        <activity android:name=".ui.auth.ProfileSetupActivity" android:exported="false"
+            android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.OriginConnect"/>
 
         <activity
             android:name=".ui.main.MainActivity"

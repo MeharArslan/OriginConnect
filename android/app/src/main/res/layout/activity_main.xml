@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent"
-    android:orientation="vertical" android:background="#0A0A0A">
+    android:orientation="vertical" android:background="@color/oc_bg">
     <LinearLayout android:layout_width="match_parent" android:layout_height="56dp"
-        android:background="#1C1C1E" android:gravity="center_vertical" android:paddingHorizontal="16dp">
+        android:background="#1C1C1E" android:gravity="center_vertical"
+        android:paddingHorizontal="16dp">
         <TextView android:layout_width="0dp" android:layout_height="wrap_content"
             android:layout_weight="1" android:text="OriginConnect"
-            android:textSize="20sp" android:textStyle="bold" android:textColor="#FFFFFF"/>
+            android:textSize="20sp" android:textStyle="bold" android:textColor="#FFFFFF"
+            android:fontFamily="sans-serif-medium"/>
     </LinearLayout>
     <FrameLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
         <androidx.recyclerview.widget.RecyclerView
@@ -20,6 +22,5 @@
         android:id="@+id/fabNewChat"
         android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:layout_gravity="bottom|end" android:layout_margin="16dp"
-        android:src="@android:drawable/ic_input_add"
-        android:backgroundTint="#1B6EF3"/>
+        android:src="@android:drawable/ic_input_add" android:backgroundTint="#1B6EF3"/>
 </LinearLayout>

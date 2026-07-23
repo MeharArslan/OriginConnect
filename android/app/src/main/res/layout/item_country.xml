@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="64dp"
+    android:orientation="horizontal" android:gravity="center_vertical"
+    android:paddingHorizontal="20dp"
+    android:background="?attr/selectableItemBackground">
+    <TextView android:id="@+id/tvFlag"
+        android:layout_width="36dp" android:layout_height="36dp"
+        android:textSize="24sp" android:gravity="center"/>
+    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+        android:layout_weight="1" android:orientation="vertical"
+        android:layout_marginStart="12dp">
+        <TextView android:id="@+id/tvCountryName"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:textSize="16sp" android:textColor="@color/oc_text_primary"
+            android:singleLine="true"/>
+    </LinearLayout>
+    <TextView android:id="@+id/tvDialCode"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:textSize="15sp" android:textColor="@color/oc_text_secondary"
+        android:fontFamily="sans-serif-medium"/>
+</LinearLayout>

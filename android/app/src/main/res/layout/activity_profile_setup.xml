@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:background="@color/oc_bg">
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="56dp"
+        android:gravity="center_vertical" android:paddingHorizontal="16dp">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="@string/profile_title" android:textSize="22sp"
+            android:textStyle="bold" android:textColor="@color/oc_text_primary"
+            android:fontFamily="sans-serif-medium"/>
+    </LinearLayout>
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1" android:orientation="vertical"
+        android:paddingHorizontal="24dp">
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="@string/profile_desc" android:textSize="14sp"
+            android:textColor="@color/oc_text_secondary" android:lineSpacingMultiplier="1.5"/>
+
+        <!-- Avatar picker -->
+        <FrameLayout android:layout_width="96dp" android:layout_height="96dp"
+            android:layout_gravity="center_horizontal" android:layout_marginTop="32dp">
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imgAvatar"
+                android:layout_width="96dp" android:layout_height="96dp"
+                android:background="@drawable/bg_avatar_picker"
+                android:src="@drawable/ic_person" android:scaleType="center"
+                android:padding="20dp"
+                app:shapeAppearanceOverlay="@style/CircleImageView"/>
+            <FrameLayout android:layout_width="32dp" android:layout_height="32dp"
+                android:layout_gravity="bottom|end"
+                android:background="@drawable/bg_btn_primary"
+                android:padding="4dp">
+                <ImageView android:layout_width="match_parent" android:layout_height="match_parent"
+                    android:src="@drawable/ic_camera"/>
+            </FrameLayout>
+        </FrameLayout>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="@string/add_photo" android:textColor="@color/oc_primary"
+            android:textSize="13sp" android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp" android:id="@+id/tvAddPhoto"/>
+
+        <!-- Name field -->
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/OcOutlinedField"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:hint="@string/your_name" android:layout_marginTop="32dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etName"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:inputType="textPersonName|textCapWords"
+                android:textColor="@color/oc_text_primary" android:maxLength="50"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- About field -->
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/OcOutlinedField"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:hint="@string/about_optional" android:layout_marginTop="16dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etAbout"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:inputType="textMultiLine" android:maxLines="3"
+                android:textColor="@color/oc_text_primary" android:maxLength="100"/>
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical" android:paddingHorizontal="24dp"
+        android:paddingBottom="40dp">
+        <ProgressBar android:id="@+id/progress"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal" android:visibility="gone"
+            android:layout_marginBottom="16dp"/>
+        <Button android:id="@+id/btnContinue"
+            android:layout_width="match_parent" android:layout_height="56dp"
+            android:text="@string/continue_btn"
+            android:background="@drawable/bg_btn_disabled"
+            android:textColor="@color/oc_text_secondary"
+            android:textSize="16sp" android:fontFamily="sans-serif-medium"
+            android:enabled="false"/>
+    </LinearLayout>
+</LinearLayout>

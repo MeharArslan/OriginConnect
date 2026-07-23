@@ -4,26 +4,26 @@
     android:orientation="horizontal" android:gravity="center_vertical"
     android:paddingHorizontal="16dp" android:background="?attr/selectableItemBackground">
     <FrameLayout android:layout_width="48dp" android:layout_height="48dp">
-        <ImageView android:id="@+id/imgAvatar"
-            android:layout_width="48dp" android:layout_height="48dp"
-            android:background="#1B6EF3" android:src="@android:drawable/ic_menu_myplaces"
-            android:tint="#FFFFFF" android:scaleType="center" android:padding="10dp"/>
-        <TextView android:id="@+id/txtBadge"
-            android:layout_width="18dp" android:layout_height="18dp"
-            android:layout_gravity="top|end" android:background="@drawable/bg_badge"
-            android:gravity="center" android:textColor="#FFFFFF"
-            android:textSize="10sp" android:textStyle="bold" android:visibility="gone"/>
+        <ImageView android:id="@+id/imgAvatar" android:layout_width="48dp"
+            android:layout_height="48dp" android:background="#1B6EF3"
+            android:src="@android:drawable/ic_menu_myplaces" android:tint="#FFFFFF"
+            android:scaleType="center" android:padding="10dp"/>
+        <TextView android:id="@+id/txtBadge" android:layout_width="18dp"
+            android:layout_height="18dp" android:layout_gravity="top|end"
+            android:background="@drawable/bg_badge" android:gravity="center"
+            android:textColor="#FFFFFF" android:textSize="10sp"
+            android:textStyle="bold" android:visibility="gone"/>
     </FrameLayout>
     <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
-        android:layout_weight="1" android:orientation="vertical" android:layout_marginStart="12dp">
-        <TextView android:id="@+id/txtName"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:textSize="16sp" android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
-        <TextView android:id="@+id/txtSnippet"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:textSize="14sp" android:textColor="#8E8E93" android:singleLine="true" android:layout_marginTop="2dp"/>
+        android:layout_weight="1" android:orientation="vertical"
+        android:layout_marginStart="12dp">
+        <TextView android:id="@+id/txtName" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:textSize="16sp"
+            android:textStyle="bold" android:textColor="#FFFFFF" android:singleLine="true"/>
+        <TextView android:id="@+id/txtSnippet" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:textSize="14sp"
+            android:textColor="#8E8E93" android:singleLine="true" android:layout_marginTop="2dp"/>
     </LinearLayout>
-    <TextView android:id="@+id/txtTime"
-        android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:textSize="12sp" android:textColor="#8E8E93"/>
+    <TextView android:id="@+id/txtTime" android:layout_width="wrap_content"
+        android:layout_height="wrap_content" android:textSize="12sp" android:textColor="#8E8E93"/>
 </LinearLayout>

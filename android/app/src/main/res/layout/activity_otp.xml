@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:background="@color/oc_bg">
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="56dp"
+        android:gravity="center_vertical" android:paddingHorizontal="8dp">
+        <ImageButton android:id="@+id/btnBack"
+            android:layout_width="48dp" android:layout_height="48dp"
+            android:src="@drawable/ic_arrow_back"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="12dp"/>
+    </LinearLayout>
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1" android:orientation="vertical"
+        android:paddingHorizontal="24dp">
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="@string/verify_code" android:textSize="26sp"
+            android:textStyle="bold" android:textColor="@color/oc_text_primary"
+            android:fontFamily="sans-serif-medium"/>
+
+        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:layout_marginTop="8dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/otp_sent_to" android:textSize="14sp"
+                android:textColor="@color/oc_text_secondary"/>
+            <TextView android:id="@+id/tvPhone"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:textSize="14sp" android:textColor="@color/oc_primary"
+                android:textStyle="bold" android:layout_marginStart="4dp"/>
+        </LinearLayout>
+
+        <!-- 6 OTP boxes -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="horizontal" android:layout_marginTop="40dp"
+            android:gravity="center" android:weightSum="6">
+            <EditText android:id="@+id/otp1"
+                android:layout_width="0dp" android:layout_height="56dp"
+                android:layout_weight="1" android:layout_marginHorizontal="4dp"
+                android:background="@drawable/bg_otp_box" android:gravity="center"
+                android:textColor="@color/oc_text_primary" android:textSize="22sp"
+                android:textStyle="bold" android:maxLength="1"
+                android:inputType="number" android:cursorVisible="false"/>
+            <EditText android:id="@+id/otp2"
+                android:layout_width="0dp" android:layout_height="56dp"
+                android:layout_weight="1" android:layout_marginHorizontal="4dp"
+                android:background="@drawable/bg_otp_box" android:gravity="center"
+                android:textColor="@color/oc_text_primary" android:textSize="22sp"
+                android:textStyle="bold" android:maxLength="1"
+                android:inputType="number" android:cursorVisible="false"/>
+            <EditText android:id="@+id/otp3"
+                android:layout_width="0dp" android:layout_height="56dp"
+                android:layout_weight="1" android:layout_marginHorizontal="4dp"
+                android:background="@drawable/bg_otp_box" android:gravity="center"
+                android:textColor="@color/oc_text_primary" android:textSize="22sp"
+                android:textStyle="bold" android:maxLength="1"
+                android:inputType="number" android:cursorVisible="false"/>
+            <EditText android:id="@+id/otp4"
+                android:layout_width="0dp" android:layout_height="56dp"
+                android:layout_weight="1" android:layout_marginHorizontal="4dp"
+                android:background="@drawable/bg_otp_box" android:gravity="center"
+                android:textColor="@color/oc_text_primary" android:textSize="22sp"
+                android:textStyle="bold" android:maxLength="1"
+                android:inputType="number" android:cursorVisible="false"/>
+            <EditText android:id="@+id/otp5"
+                android:layout_width="0dp" android:layout_height="56dp"
+                android:layout_weight="1" android:layout_marginHorizontal="4dp"
+                android:background="@drawable/bg_otp_box" android:gravity="center"
+                android:textColor="@color/oc_text_primary" android:textSize="22sp"
+                android:textStyle="bold" android:maxLength="1"
+                android:inputType="number" android:cursorVisible="false"/>
+            <EditText android:id="@+id/otp6"
+                android:layout_width="0dp" android:layout_height="56dp"
+                android:layout_weight="1" android:layout_marginHorizontal="4dp"
+                android:background="@drawable/bg_otp_box" android:gravity="center"
+                android:textColor="@color/oc_text_primary" android:textSize="22sp"
+                android:textStyle="bold" android:maxLength="1"
+                android:inputType="number" android:cursorVisible="false"/>
+        </LinearLayout>
+
+        <TextView android:id="@+id/tvError"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="Incorrect code. Try again."
+            android:textColor="@color/oc_error" android:textSize="13sp"
+            android:gravity="center" android:layout_marginTop="16dp"
+            android:visibility="gone"/>
+
+        <ProgressBar android:id="@+id/progress"
+            android:layout_width="40dp" android:layout_height="40dp"
+            android:layout_gravity="center_horizontal" android:layout_marginTop="24dp"
+            android:layout_marginStart="auto" android:visibility="gone"/>
+
+        <TextView android:id="@+id/tvResendTimer"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:textColor="@color/oc_text_secondary" android:textSize="14sp"
+            android:gravity="center" android:layout_marginTop="32dp"/>
+
+        <TextView android:id="@+id/tvResend"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="@string/resend_code" android:textColor="@color/oc_primary"
+            android:textSize="14sp" android:fontFamily="sans-serif-medium"
+            android:gravity="center" android:layout_marginTop="8dp"
+            android:visibility="gone" android:padding="8dp"/>
+
+        <TextView android:id="@+id/tvWrongNumber"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="@string/wrong_number" android:textColor="@color/oc_text_secondary"
+            android:textSize="14sp" android:gravity="center"
+            android:layout_marginTop="8dp" android:padding="8dp"/>
+    </LinearLayout>
+</LinearLayout>

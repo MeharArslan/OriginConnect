@@ -1,34 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent"
-    android:orientation="vertical" android:gravity="center"
-    android:padding="32dp" android:background="#0A0A0A">
+    android:background="@color/oc_bg">
     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:text="OriginConnect" android:textSize="28sp" android:textStyle="bold"
-        android:textColor="#FFFFFF" android:layout_marginBottom="48dp"/>
-    <EditText android:id="@+id/etPhone"
-        android:layout_width="match_parent" android:layout_height="56dp"
-        android:textColor="#FFFFFF" android:inputType="phone"
-        android:background="#1C1C1E" android:padding="16dp" android:layout_marginBottom="16dp"/>
-    <Button android:id="@+id/btnSendOtp"
-        android:layout_width="match_parent" android:layout_height="56dp"
-        android:text="Send OTP" android:backgroundTint="#1B6EF3"
-        android:textColor="#FFFFFF" android:layout_marginBottom="24dp"/>
-    <LinearLayout android:id="@+id/otpLayout"
-        android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:orientation="vertical" android:visibility="gone">
-        <EditText android:id="@+id/etOtp"
-            android:layout_width="match_parent" android:layout_height="56dp"
-            android:textColor="#FFFFFF" android:inputType="number" android:maxLength="6"
-            android:background="#1C1C1E" android:padding="16dp" android:layout_marginBottom="16dp"/>
-        <Button android:id="@+id/btnVerify"
-            android:layout_width="match_parent" android:layout_height="56dp"
-            android:text="Verify" android:backgroundTint="#1B6EF3" android:textColor="#FFFFFF"/>
-    </LinearLayout>
-    <TextView android:id="@+id/tvStatus"
-        android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:textColor="#8E8E93" android:layout_marginTop="16dp"/>
-    <ProgressBar android:id="@+id/progress"
-        android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:layout_marginTop="16dp" android:visibility="gone"/>
-</LinearLayout>
+        android:layout_gravity="center" android:text="Loading..."
+        android:textColor="@color/oc_text_secondary"/>
+</FrameLayout>

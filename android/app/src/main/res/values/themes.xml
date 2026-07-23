@@ -5,6 +5,46 @@
         <item name="colorPrimaryDark">@color/oc_primary_dark</item>
         <item name="colorAccent">@color/oc_primary</item>
         <item name="android:windowBackground">@color/oc_bg</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@color/oc_bg</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:enforceNavigationBarContrast" tools:targetApi="q">false</item>
+        <item name="materialAlertDialogTheme">@style/OcAlertDialog</item>
+    </style>
+
+    <style name="Theme.OriginConnect.Splash" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:windowBackground">@color/oc_bg</item>
         <item name="android:statusBarColor">@color/oc_bg</item>
+        <item name="android:navigationBarColor">@color/oc_bg</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
+    <style name="OcAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="colorSurface">@color/oc_surface</item>
+        <item name="colorOnSurface">@color/oc_text_primary</item>
+    </style>
+
+    <style name="OcButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:background">@drawable/bg_btn_primary</item>
+        <item name="android:textColor">@color/oc_text_primary</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">0.02</item>
+        <item name="rippleColor">@color/oc_primary_light</item>
+        <item name="cornerRadius">14dp</item>
+    </style>
+
+    <style name="OcOutlinedField" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/oc_surface2</item>
+        <item name="hintTextColor">@color/oc_text_secondary</item>
+        <item name="android:textColorHint">@color/oc_text_secondary</item>
+        <item name="boxBackgroundColor">@color/oc_surface</item>
+        <item name="cornerRadius">14dp</item>
+    </style>
+
+    <style name="CircleImageView" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
     </style>
 </resources>

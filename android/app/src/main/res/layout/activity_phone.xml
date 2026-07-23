@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:background="@color/oc_bg">
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="56dp"
+        android:gravity="center_vertical" android:paddingHorizontal="8dp">
+        <ImageButton android:id="@+id/btnBack"
+            android:layout_width="48dp" android:layout_height="48dp"
+            android:src="@drawable/ic_arrow_back"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="12dp"/>
+    </LinearLayout>
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1" android:orientation="vertical"
+        android:paddingHorizontal="24dp">
+
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="@string/enter_phone" android:textSize="26sp"
+            android:textStyle="bold" android:textColor="@color/oc_text_primary"
+            android:fontFamily="sans-serif-medium"/>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="@string/phone_desc" android:textSize="14sp"
+            android:textColor="@color/oc_text_secondary" android:layout_marginTop="8dp"
+            android:lineSpacingMultiplier="1.5"/>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="56dp"
+            android:orientation="horizontal" android:layout_marginTop="32dp"
+            android:gravity="center_vertical">
+
+            <LinearLayout android:id="@+id/btnCountryCode"
+                android:layout_width="wrap_content" android:layout_height="56dp"
+                android:orientation="horizontal" android:gravity="center_vertical"
+                android:background="@drawable/bg_country_selector"
+                android:paddingHorizontal="16dp" android:layout_marginEnd="8dp">
+                <TextView android:id="@+id/tvFlag"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:textSize="22sp" android:text="🇵🇰"/>
+                <TextView android:id="@+id/tvCode"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="+92" android:textColor="@color/oc_text_primary"
+                    android:textSize="16sp" android:fontFamily="sans-serif-medium"
+                    android:layout_marginStart="6dp"/>
+                <ImageView android:layout_width="16dp" android:layout_height="16dp"
+                    android:src="@android:drawable/arrow_down_float"
+                    android:layout_marginStart="4dp"/>
+            </LinearLayout>
+
+            <EditText android:id="@+id/etPhone"
+                android:layout_width="0dp" android:layout_height="56dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_phone_field"
+                android:hint="3001234567" android:textColorHint="@color/oc_text_hint"
+                android:textColor="@color/oc_text_primary"
+                android:textSize="18sp" android:fontFamily="sans-serif"
+                android:paddingHorizontal="16dp"
+                android:inputType="phone" android:maxLength="15"/>
+        </LinearLayout>
+
+        <TextView android:id="@+id/tvPhoneError"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="Invalid phone number"
+            android:textColor="@color/oc_error" android:textSize="13sp"
+            android:layout_marginTop="8dp" android:layout_marginStart="4dp"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+    <Button android:id="@+id/btnContinue"
+        android:layout_width="match_parent" android:layout_height="56dp"
+        android:layout_marginHorizontal="24dp" android:layout_marginBottom="40dp"
+        android:text="@string/continue_btn"
+        android:background="@drawable/bg_btn_disabled"
+        android:textColor="@color/oc_text_secondary"
+        android:textSize="16sp" android:fontFamily="sans-serif-medium"
+        android:enabled="false"/>
+</LinearLayout>
