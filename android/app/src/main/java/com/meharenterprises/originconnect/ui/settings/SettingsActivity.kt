@@ -10,8 +10,8 @@ import com.meharenterprises.originconnect.data.local.SessionManager
 import com.meharenterprises.originconnect.ui.auth.WelcomeActivity
 import com.meharenterprises.originconnect.ui.profile.ProfileActivity
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,30 +30,28 @@ class SettingsActivity : AppCompatActivity() {
         supportActionBar?.title = "Settings"
         tb.setNavigationOnClickListener { finish() }
 
-        click(R.id.rowProfile)       { startActivity(Intent(this, ProfileActivity::class.java)) }
-        click(R.id.rowPrivacy)       { toast("Privacy settings coming soon") }
-        click(R.id.rowNotifications) { toast("Notification settings coming soon") }
-        click(R.id.rowStorage)       { toast("Storage settings coming soon") }
-        click(R.id.rowAppearance)    { toast("Appearance settings coming soon") }
-        click(R.id.rowHelp)          { toast("Help & support coming soon") }
-        click(R.id.rowLogout)        { doLogout() }
+        row(R.id.rowProfile) { startActivity(Intent(this, ProfileActivity::class.java)) }
+        row(R.id.rowPrivacy) { toast("Privacy settings") }
+        row(R.id.rowNotifications) { toast("Notification settings") }
+        row(R.id.rowStorage) { toast("Storage settings") }
+        row(R.id.rowAppearance) { toast("Appearance settings") }
+        row(R.id.rowHelp) { toast("Help & FAQ") }
+        row(R.id.rowLogout) { performLogout() }
     }
 
-    private fun click(id: Int, action: () -> Unit) {
+    private fun row(id: Int, action: () -> Unit) =
         try { findViewById<android.view.View>(id)?.setOnClickListener { action() } } catch (_: Exception) {}
-    }
 
     private fun toast(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
 
-    // Use GlobalScope so coroutine doesn't get cancelled when activity is cleared
-    private fun doLogout() {
+    private fun performLogout() {
+        // GlobalScope: not tied to activity lifecycle, won't crash on CLEAR_TASK
         GlobalScope.launch(Dispatchers.IO) {
             try { session.clearSession() } catch (_: Exception) {}
-            val intent = Intent(this@SettingsActivity, WelcomeActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            }
-            startActivity(intent)
         }
+        val i = Intent(this, WelcomeActivity::class.java)
+        i.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(i)
     }
 
     override fun onSupportNavigateUp(): Boolean { finish(); return true }

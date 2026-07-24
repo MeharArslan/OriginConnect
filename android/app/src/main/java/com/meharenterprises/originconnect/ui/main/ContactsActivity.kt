@@ -28,9 +28,9 @@ import kotlinx.coroutines.launch
 class ContactsActivity : AppCompatActivity() {
     private val vm: ContactsViewModel by viewModels()
 
-    private val requestPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-        if (granted) readContactsAndSync() else vm.load() // try without device contacts
-    }
+    private val permissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted -> if (granted) syncDeviceContacts() else vm.load() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,7 +72,7 @@ class ContactsActivity : AppCompatActivity() {
                             recycler.visibility = View.GONE
                             tvEmpty.visibility = View.VISIBLE
                             tvEmpty.text = if (state.all.isEmpty())
-                                "No OriginConnect users found in your contacts. Share OriginConnect with friends to get started."
+                                "No contacts found on OriginConnect. Invite friends to join."
                             else "No contacts match your search."
                         } else {
                             tvEmpty.visibility = View.GONE
@@ -83,8 +83,7 @@ class ContactsActivity : AppCompatActivity() {
                     is ContactsUiState.Err -> {
                         progress.visibility = View.GONE
                         tvEmpty.visibility = View.VISIBLE
-                        tvEmpty.text = "Error: ${state.msg}. Tap to retry."
-                        tvEmpty.setOnClickListener { requestContactsPermission() }
+                        tvEmpty.text = "Could not load contacts. Check connection."
                     }
                 }
             }
@@ -113,19 +112,16 @@ class ContactsActivity : AppCompatActivity() {
             }
         }
 
-        requestContactsPermission()
-    }
-
-    private fun requestContactsPermission() {
-        when {
-            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS)
-                == PackageManager.PERMISSION_GRANTED -> readContactsAndSync()
-            else -> requestPermission.launch(Manifest.permission.READ_CONTACTS)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS)
+            == PackageManager.PERMISSION_GRANTED) {
+            syncDeviceContacts()
+        } else {
+            permissionLauncher.launch(Manifest.permission.READ_CONTACTS)
         }
     }
 
-    private fun readContactsAndSync() {
-        val phones = mutableListOf<String>()
+    private fun syncDeviceContacts() {
+        val phones = mutableSetOf<String>()
         try {
             val cursor = contentResolver.query(
                 ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
@@ -136,21 +132,22 @@ class ContactsActivity : AppCompatActivity() {
                 val col = it.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
                 while (it.moveToNext()) {
                     val raw = it.getString(col)?.trim() ?: continue
-                    // Normalize: remove spaces/dashes, ensure starts with +
-                    val normalized = raw.replace(Regex("[\\s\\-().]"), "")
-                    if (normalized.isNotEmpty()) phones.add(normalized)
+                    // Remove all non-digit chars except leading +
+                    val digits = raw.filter { c -> c.isDigit() || c == '+' }
+                        .trimStart()
+                    if (digits.length >= 7) {
+                        phones.add(digits)
+                        // Add E.164 variants for Pakistan
+                        when {
+                            digits.startsWith("+92") -> phones.add("0" + digits.drop(3))
+                            digits.startsWith("0") && digits.length >= 10 -> phones.add("+92" + digits.drop(1))
+                            digits.length == 10 -> phones.add("+92$digits")
+                        }
+                    }
                 }
             }
         } catch (_: Exception) {}
-
-        // Also add without country code variants for Pakistan (+92 → 0)
-        val allPhones = phones.toMutableSet()
-        phones.forEach { p ->
-            if (p.startsWith("+92") && p.length > 3) allPhones.add("0" + p.drop(3))
-            if (p.startsWith("0") && p.length > 1) allPhones.add("+92" + p.drop(1))
-        }
-
-        vm.syncAndLoad(allPhones.toList())
+        vm.syncAndLoad(phones.toList())
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

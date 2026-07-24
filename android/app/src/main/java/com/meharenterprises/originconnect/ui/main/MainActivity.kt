@@ -1,7 +1,8 @@
 package com.meharenterprises.originconnect.ui.main
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
-import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.Menu
@@ -11,7 +12,9 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -20,14 +23,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.meharenterprises.originconnect.R
 import com.meharenterprises.originconnect.data.local.SessionManager
-import com.meharenterprises.originconnect.ui.auth.WelcomeActivity
 import com.meharenterprises.originconnect.ui.chats.ChatsFragment
 import com.meharenterprises.originconnect.ui.profile.ProfileActivity
 import com.meharenterprises.originconnect.ui.settings.SettingsActivity
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -37,6 +36,16 @@ class MainActivity : AppCompatActivity() {
     private lateinit var fab: FloatingActionButton
     private lateinit var etSearch: EditText
     private lateinit var btnClear: ImageView
+
+    private val cameraPermission = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) launchCamera()
+        else Toast.makeText(this, "Camera permission denied", Toast.LENGTH_SHORT).show()
+    }
+    private val cameraLauncher = registerForActivityResult(
+        ActivityResultContracts.TakePicturePreview()
+    ) { /* bitmap captured, handle if needed */ }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,7 +79,6 @@ class MainActivity : AppCompatActivity() {
                 getChatsFragment()?.search(q)
             }
         })
-
         btnClear.setOnClickListener {
             etSearch.setText("")
             btnClear.visibility = View.GONE
@@ -103,25 +111,26 @@ class MainActivity : AppCompatActivity() {
         etSearch.clearFocus()
     }
 
+    private fun launchCamera() = cameraLauncher.launch(null)
+
+    private fun openCamera() {
+        when {
+            ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_GRANTED -> launchCamera()
+            else -> cameraPermission.launch(Manifest.permission.CAMERA)
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        R.id.action_camera -> {
-            try {
-                val i = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                if (i.resolveActivity(packageManager) != null) startActivity(i)
-                else Toast.makeText(this, "Camera not available", Toast.LENGTH_SHORT).show()
-            } catch (e: Exception) {
-                Toast.makeText(this, "Camera error: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
-            true
-        }
+        R.id.action_camera   -> { openCamera(); true }
         R.id.action_settings -> { startActivity(Intent(this, SettingsActivity::class.java)); true }
         R.id.action_profile  -> { startActivity(Intent(this, ProfileActivity::class.java)); true }
-        R.id.action_archived -> { Toast.makeText(this, "Archived chats", Toast.LENGTH_SHORT).show(); true }
+        R.id.action_archived -> { Toast.makeText(this, "No archived chats", Toast.LENGTH_SHORT).show(); true }
         else -> super.onOptionsItemSelected(item)
     }
 }
