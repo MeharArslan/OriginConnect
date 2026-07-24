@@ -19,14 +19,17 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.meharenterprises.originconnect.R
+import com.meharenterprises.originconnect.data.local.ContactNameCache
 import com.meharenterprises.originconnect.ui.chat.ChatActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ContactsActivity : AppCompatActivity() {
     private val vm: ContactsViewModel by viewModels()
+    @Inject lateinit var nameCache: ContactNameCache
 
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -48,7 +51,9 @@ class ContactsActivity : AppCompatActivity() {
         val progress = findViewById<ProgressBar>(R.id.contactsProgress)
         val tvEmpty  = findViewById<TextView>(R.id.tvContactsEmpty)
 
-        val adapter = ContactsAdapter { contact -> vm.openConversation(contact.user.id) }
+        val adapter = ContactsAdapter(nameCache) { contact ->
+            vm.openConversation(contact.user.id)
+        }
         recycler.layoutManager = LinearLayoutManager(this)
         recycler.adapter = adapter
 
@@ -68,12 +73,16 @@ class ContactsActivity : AppCompatActivity() {
                     }
                     is ContactsUiState.Success -> {
                         progress.visibility = View.GONE
+                        // Populate cache with userId→localName mapping
+                        state.all.forEach { contact ->
+                            nameCache.putUserId(contact.user.id, contact.user.phone, contact.user.displayName)
+                        }
                         if (state.filtered.isEmpty()) {
                             recycler.visibility = View.GONE
                             tvEmpty.visibility = View.VISIBLE
                             tvEmpty.text = if (state.all.isEmpty())
-                                "No contacts found on OriginConnect. Invite friends to join."
-                            else "No contacts match your search."
+                                "No OriginConnect contacts found. Invite friends to join."
+                            else "No results match your search."
                         } else {
                             tvEmpty.visibility = View.GONE
                             recycler.visibility = View.VISIBLE
@@ -83,7 +92,7 @@ class ContactsActivity : AppCompatActivity() {
                     is ContactsUiState.Err -> {
                         progress.visibility = View.GONE
                         tvEmpty.visibility = View.VISIBLE
-                        tvEmpty.text = "Could not load contacts. Check connection."
+                        tvEmpty.text = "Could not load contacts. Check your connection."
                     }
                 }
             }
@@ -99,8 +108,7 @@ class ContactsActivity : AppCompatActivity() {
                             putExtra("CONVERSATION_ID", state.conversationId)
                             putExtra("OTHER_USER_ID", state.otherUserId)
                         })
-                        vm.resetOpenChat()
-                        finish()
+                        vm.resetOpenChat(); finish()
                     }
                     is OpenChatState.Err -> {
                         progress.visibility = View.GONE
@@ -113,11 +121,8 @@ class ContactsActivity : AppCompatActivity() {
         }
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS)
-            == PackageManager.PERMISSION_GRANTED) {
-            syncDeviceContacts()
-        } else {
-            permissionLauncher.launch(Manifest.permission.READ_CONTACTS)
-        }
+            == PackageManager.PERMISSION_GRANTED) syncDeviceContacts()
+        else permissionLauncher.launch(Manifest.permission.READ_CONTACTS)
     }
 
     private fun syncDeviceContacts() {
@@ -125,24 +130,30 @@ class ContactsActivity : AppCompatActivity() {
         try {
             val cursor = contentResolver.query(
                 ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                arrayOf(ContactsContract.CommonDataKinds.Phone.NUMBER),
-                null, null, null
+                arrayOf(
+                    ContactsContract.CommonDataKinds.Phone.NUMBER,
+                    ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME
+                ), null, null, null
             )
             cursor?.use {
-                val col = it.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
+                val numCol  = it.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
+                val nameCol = it.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)
                 while (it.moveToNext()) {
-                    val raw = it.getString(col)?.trim() ?: continue
-                    // Remove all non-digit chars except leading +
+                    val raw  = it.getString(numCol)?.trim() ?: continue
+                    val name = it.getString(nameCol)?.trim() ?: continue
                     val digits = raw.filter { c -> c.isDigit() || c == '+' }
-                        .trimStart()
                     if (digits.length >= 7) {
-                        phones.add(digits)
-                        // Add E.164 variants for Pakistan
-                        when {
-                            digits.startsWith("+92") -> phones.add("0" + digits.drop(3))
-                            digits.startsWith("0") && digits.length >= 10 -> phones.add("+92" + digits.drop(1))
-                            digits.length == 10 -> phones.add("+92$digits")
+                        // Populate name cache for all phone variants
+                        nameCache.putPhone(digits, name)
+                        val e164 = when {
+                            digits.startsWith("+92") -> digits
+                            digits.startsWith("0") && digits.length >= 10 -> "+92" + digits.drop(1)
+                            digits.length == 10 -> "+92$digits"
+                            else -> digits
                         }
+                        nameCache.putPhone(e164, name)
+                        phones.add(e164)
+                        phones.add(digits)
                     }
                 }
             }

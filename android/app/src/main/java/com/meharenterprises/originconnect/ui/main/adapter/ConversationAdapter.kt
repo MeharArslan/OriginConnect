@@ -6,11 +6,13 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.meharenterprises.originconnect.R
+import com.meharenterprises.originconnect.data.local.ContactNameCache
 import com.meharenterprises.originconnect.data.model.Conversation
 import java.text.SimpleDateFormat
 import java.util.*
 
 class ConversationAdapter(
+    private val nameCache: ContactNameCache,
     private val onClick: (Conversation) -> Unit
 ) : ListAdapter<Conversation, ConversationAdapter.VH>(DIFF) {
 
@@ -19,78 +21,69 @@ class ConversationAdapter(
             override fun areItemsTheSame(a: Conversation, b: Conversation) = a.id == b.id
             override fun areContentsTheSame(a: Conversation, b: Conversation) = a == b
         }
-        private val colors = listOf(
-            0xFFE53935.toInt(), 0xFFE91E63.toInt(), 0xFF9C27B0.toInt(),
-            0xFF3F51B5.toInt(), 0xFF1976D2.toInt(), 0xFF0097A7.toInt(),
-            0xFF388E3C.toInt(), 0xFFF57C00.toInt(), 0xFF795548.toInt(), 0xFF455A64.toInt()
-        )
+        private val COLORS = listOf(0xFFE53935,0xFFE91E63,0xFF9C27B0,0xFF3F51B5,
+            0xFF1976D2,0xFF0097A7,0xFF388E3C,0xFFF57C00).map{it.toInt()}
     }
 
     inner class VH(view: View) : RecyclerView.ViewHolder(view) {
-        val imgAvatar: ImageView = view.findViewById(R.id.imgAvatar)
-        val onlineIndicator: View = view.findViewById(R.id.onlineIndicator)
-        val tvName: TextView = view.findViewById(R.id.tvName)
-        val tvSnippet: TextView = view.findViewById(R.id.tvSnippet)
-        val tvTime: TextView = view.findViewById(R.id.tvTime)
-        val tvUnread: TextView = view.findViewById(R.id.tvUnread)
-        val imgTick: ImageView = view.findViewById(R.id.imgTick)
+        val img: ImageView     = view.findViewById(R.id.imgAvatar)
+        val name: TextView     = view.findViewById(R.id.tvName)
+        val snippet: TextView  = view.findViewById(R.id.tvSnippet)
+        val time: TextView     = view.findViewById(R.id.tvTime)
+        val badge: TextView    = view.findViewById(R.id.tvUnread)
+        val online: View       = view.findViewById(R.id.onlineIndicator)
+        val tick: ImageView    = view.findViewById(R.id.imgTick)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
-        val v = LayoutInflater.from(parent.context).inflate(R.layout.item_chat, parent, false)
-        return VH(v).also { vh -> vh.itemView.setOnClickListener { onClick(getItem(vh.bindingAdapterPosition)) } }
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH =
+        VH(LayoutInflater.from(parent.context).inflate(R.layout.item_chat, parent, false))
+            .also { vh -> vh.itemView.setOnClickListener { onClick(getItem(vh.bindingAdapterPosition)) } }
 
-    override fun onBindViewHolder(holder: VH, position: Int) {
-        val conv = getItem(position)
-        val color = colors[conv.otherUserId.hashCode().and(0x7FFFFFFF) % colors.size]
-        holder.imgAvatar.setImageBitmap(makeAvatar(conv.otherUserId, color))
-        holder.tvName.text = conv.otherUserId.take(12)
-        holder.tvName.setTypeface(null, if (conv.unreadCount > 0) Typeface.BOLD else Typeface.NORMAL)
-        holder.tvSnippet.text = conv.lastMessageContent ?: ""
-        holder.tvSnippet.setTypeface(null, if (conv.unreadCount > 0) Typeface.BOLD else Typeface.NORMAL)
-        holder.tvTime.text = formatTime(conv.lastMessageAt)
+    override fun onBindViewHolder(holder: VH, pos: Int) {
+        val conv = getItem(pos)
+        // Resolve contact name: local name > backend name > last 8 of ID
+        val displayName = nameCache.resolveUserId(conv.otherUserId)
+            ?: conv.otherUserId.takeLast(8)
+
+        val color = COLORS[conv.otherUserId.hashCode().and(0x7FFFFFFF) % COLORS.size]
+        holder.img.setImageBitmap(makeAvatar(displayName, color))
+        holder.name.text = displayName
+        holder.name.setTypeface(null, if (conv.unreadCount > 0) Typeface.BOLD else Typeface.NORMAL)
+        holder.snippet.text = conv.lastMessageContent ?: ""
+        holder.snippet.setTypeface(null, if (conv.unreadCount > 0) Typeface.BOLD else Typeface.NORMAL)
+        holder.time.text = formatTime(conv.lastMessageAt)
+        holder.time.setTextColor(
+            if (conv.unreadCount > 0) holder.itemView.context.getColor(R.color.oc_primary)
+            else holder.itemView.context.getColor(R.color.oc_text_secondary)
+        )
         if (conv.unreadCount > 0) {
-            holder.tvUnread.visibility = View.VISIBLE
-            holder.tvUnread.text = if (conv.unreadCount > 99) "99+" else conv.unreadCount.toString()
-            holder.tvTime.setTextColor(holder.itemView.context.getColor(R.color.oc_primary))
-        } else {
-            holder.tvUnread.visibility = View.GONE
-            holder.tvTime.setTextColor(holder.itemView.context.getColor(R.color.oc_text_secondary))
-        }
+            holder.badge.visibility = View.VISIBLE
+            holder.badge.text = if (conv.unreadCount > 99) "99+" else conv.unreadCount.toString()
+        } else holder.badge.visibility = View.GONE
     }
 
-    private fun formatTime(millis: Long?): String {
-        if (millis == null || millis <= 0) return ""
+    private fun formatTime(ms: Long?): String {
+        if (ms == null || ms <= 0) return ""
         val now = Calendar.getInstance()
-        val cal = Calendar.getInstance().also { it.timeInMillis = millis }
+        val cal = Calendar.getInstance().also { it.timeInMillis = ms }
         return when {
             now.get(Calendar.DATE) == cal.get(Calendar.DATE) ->
-                SimpleDateFormat("h:mm a", Locale.getDefault()).format(Date(millis))
+                SimpleDateFormat("h:mm a", Locale.getDefault()).format(Date(ms))
             now.get(Calendar.YEAR) == cal.get(Calendar.YEAR) ->
-                SimpleDateFormat("MMM d", Locale.getDefault()).format(Date(millis))
-            else -> SimpleDateFormat("MM/dd/yy", Locale.getDefault()).format(Date(millis))
+                SimpleDateFormat("MMM d", Locale.getDefault()).format(Date(ms))
+            else -> SimpleDateFormat("MM/dd/yy", Locale.getDefault()).format(Date(ms))
         }
     }
 
-    private fun makeAvatar(seed: String, color: Int): Bitmap {
+    private fun makeAvatar(name: String, color: Int): Bitmap {
         val S = 256; val h = S / 2f
         val bmp = Bitmap.createBitmap(S, S, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bmp)
-        val paint = Paint(Paint.ANTI_ALIAS_FLAG)
-        paint.color = color; canvas.drawCircle(h, h, h, paint)
-        paint.color = Color.WHITE
-        val isPhone = seed.replace("+","").replace(" ","").replace("-","").all { it.isDigit() }
-        if (isPhone) {
-            canvas.drawCircle(h, S*0.36f, S*0.21f, paint)
-            canvas.drawOval(RectF(S*0.11f, S*0.60f, S*0.89f, S*1.08f), paint)
-        } else {
-            val initial = seed.firstOrNull { it.isLetter() }?.uppercaseChar()?.toString() ?: "?"
-            paint.textSize = S*0.44f; paint.textAlign = Paint.Align.CENTER
-            paint.typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
-            val fm = paint.fontMetrics
-            canvas.drawText(initial, h, h-(fm.ascent+fm.descent)/2f, paint)
-        }
+        val cv = Canvas(bmp); val p = Paint(Paint.ANTI_ALIAS_FLAG)
+        p.color = color; cv.drawCircle(h, h, h, p); p.color = Color.WHITE
+        val init = name.firstOrNull { it.isLetter() }?.uppercaseChar()?.toString() ?: "?"
+        p.textSize = S * 0.44f; p.textAlign = Paint.Align.CENTER
+        p.typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+        val fm = p.fontMetrics; cv.drawText(init, h, h - (fm.ascent + fm.descent) / 2f, p)
         return bmp
     }
 }

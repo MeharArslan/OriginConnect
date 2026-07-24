@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.meharenterprises.originconnect.R
+import com.meharenterprises.originconnect.data.local.ContactNameCache
 import com.meharenterprises.originconnect.data.local.SessionManager
 import com.meharenterprises.originconnect.data.model.Conversation
 import com.meharenterprises.originconnect.ui.chat.ChatActivity
@@ -23,6 +24,7 @@ import javax.inject.Inject
 class ChatsFragment : Fragment() {
     private val vm: ChatsViewModel by viewModels()
     @Inject lateinit var session: SessionManager
+    @Inject lateinit var nameCache: ContactNameCache
     private var _adapter: ConversationAdapter? = null
 
     override fun onCreateView(inf: LayoutInflater, cont: ViewGroup?, state: Bundle?): View =
@@ -33,7 +35,7 @@ class ChatsFragment : Fragment() {
         val swipe    = view.findViewById<SwipeRefreshLayout>(R.id.swipeRefresh)
         val empty    = view.findViewById<LinearLayout>(R.id.emptyChats)
 
-        val adapter = ConversationAdapter { conv: Conversation ->
+        val adapter = ConversationAdapter(nameCache) { conv: Conversation ->
             startActivity(Intent(requireContext(), ChatActivity::class.java).apply {
                 putExtra("CONVERSATION_ID", conv.id)
                 putExtra("OTHER_USER_ID", conv.otherUserId)
@@ -49,7 +51,7 @@ class ChatsFragment : Fragment() {
                 adapter.submitList(s.filtered)
                 swipe.isRefreshing = s.isLoading
                 val showEmpty = !s.isLoading && s.filtered.isEmpty()
-                empty.visibility   = if (showEmpty) View.VISIBLE else View.GONE
+                empty.visibility    = if (showEmpty) View.VISIBLE else View.GONE
                 recycler.visibility = if (showEmpty) View.GONE   else View.VISIBLE
             }
         }
