@@ -1,6 +1,7 @@
 package com.meharenterprises.originconnect.ui.profile
 import android.Manifest
 import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
@@ -20,6 +21,7 @@ import com.meharenterprises.originconnect.data.local.SessionManager
 import com.meharenterprises.originconnect.data.remote.ApiService
 import com.meharenterprises.originconnect.data.remote.UpdatePhotoRequest
 import com.meharenterprises.originconnect.data.remote.UpdateProfileRequest
+import com.yalantis.ucrop.UCrop
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -32,26 +34,40 @@ import javax.inject.Inject
 class ProfileActivity : AppCompatActivity() {
     @Inject lateinit var session: SessionManager
     @Inject lateinit var api: ApiService
-    private var photoUri: Uri? = null
+    private var croppedUri: Uri? = null
 
-    private val cameraPermission = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { granted -> if (granted) cameraLauncher.launch(null) else toast("Camera permission denied") }
-
-    private val cameraLauncher = registerForActivityResult(
-        ActivityResultContracts.TakePicturePreview()
-    ) { bitmap: Bitmap? ->
-        bitmap?.let {
-            val file = File(cacheDir, "cam_${System.currentTimeMillis()}.jpg")
-            file.outputStream().use { out -> bitmap.compress(Bitmap.CompressFormat.JPEG, 95, out) }
-            photoUri = Uri.fromFile(file)
-            updatePreview(photoUri!!)
+    private val cameraPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        if (granted) cameraLauncher.launch(null) else toast("Camera permission denied")
+    }
+    private val cameraLauncher = registerForActivityResult(ActivityResultContracts.TakePicturePreview()) { bmp: Bitmap? ->
+        bmp?.let {
+            val f = File(cacheDir, "cam_${System.currentTimeMillis()}.jpg")
+            f.outputStream().use { out -> bmp.compress(Bitmap.CompressFormat.JPEG, 95, out) }
+            startCrop(Uri.fromFile(f))
+        }
+    }
+    private val galleryLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        uri?.let { startCrop(it) }
+    }
+    @Suppress("DEPRECATION")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == UCrop.REQUEST_CROP && resultCode == Activity.RESULT_OK) {
+            val result = UCrop.getOutput(data!!)
+            result?.let { uri ->
+                croppedUri = uri
+                try { findViewById<ImageView>(R.id.imgProfileAvatar).setImageURI(uri) } catch (_: Exception) {}
+            }
         }
     }
 
-    private val galleryLauncher = registerForActivityResult(
-        ActivityResultContracts.GetContent()
-    ) { uri -> uri?.let { photoUri = it; updatePreview(it) } }
+    private fun startCrop(source: Uri) {
+        val dest = Uri.fromFile(File(cacheDir, "cropped_${System.currentTimeMillis()}.jpg"))
+        UCrop.of(source, dest)
+            .withAspectRatio(1f, 1f)
+            .withMaxResultSize(800, 800)
+            .start(this)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,6 +105,13 @@ class ProfileActivity : AppCompatActivity() {
             tvPhone.text = session.getUserPhone() ?: ""
             val name = session.getUserName() ?: ""
             if (name.isNotEmpty() && !name.startsWith("+")) etName.setText(name)
+            // Load existing photo
+            val photo = session.getUserPhoto()
+            if (!photo.isNullOrEmpty()) {
+                try {
+                    coil.load(img, photo) { transformations(coil.transform.CircleCropTransformation()) }
+                } catch (_: Exception) {}
+            }
         }
 
         btnCamera.setOnClickListener {
@@ -107,53 +130,37 @@ class ProfileActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 try {
                     val auth = session.getAuthHeader()
-                    // Upload photo if selected
-                    if (photoUri != null) {
+                    if (croppedUri != null) {
                         try {
-                            val stream = contentResolver.openInputStream(photoUri!!)
-                            val file = File(cacheDir, "profile_${System.currentTimeMillis()}.jpg")
+                            val stream = contentResolver.openInputStream(croppedUri!!)
+                            val file = File(cacheDir, "profile_upload_${System.currentTimeMillis()}.jpg")
                             file.outputStream().use { stream?.copyTo(it) }
                             val body = MultipartBody.Part.createFormData("file", file.name,
                                 file.asRequestBody("image/jpeg".toMediaTypeOrNull()))
-                            val mediaRes = api.uploadMedia(body, auth)
-                            if (mediaRes.isSuccessful) {
-                                val url = mediaRes.body()?.url
+                            val res = api.uploadMedia(body, auth)
+                            if (res.isSuccessful) {
+                                val url = res.body()?.url
                                 if (!url.isNullOrEmpty()) {
                                     api.updatePhoto(UpdatePhotoRequest(url), auth)
-                                    session.saveSession(session.getAccessToken() ?: "",
-                                        session.getRefreshToken() ?: "", session.getUserId() ?: "",
-                                        session.getUserPhone() ?: "", name, url)
+                                    session.saveSession(session.getAccessToken()!!, session.getRefreshToken()!!,
+                                        session.getUserId()!!, session.getUserPhone()!!, name, url)
                                 }
-                            } else { toast("Photo upload failed — check connection") }
+                            } else toast("Photo upload failed — check connection")
                         } catch (e: Exception) { toast("Photo error: ${e.message}") }
                     }
-                    // Save name and about
                     val res = api.updateProfile(UpdateProfileRequest(displayName = name, about = about.ifEmpty { null }), auth)
                     if (res.isSuccessful) {
-                        session.saveSession(session.getAccessToken() ?: "",
-                            session.getRefreshToken() ?: "", session.getUserId() ?: "",
-                            session.getUserPhone() ?: "", name, session.getUserPhoto())
-                        toast("Profile saved successfully")
-                        setResult(Activity.RESULT_OK)
-                        finish()
-                    } else { toast("Save failed — check connection") }
+                        session.saveSession(session.getAccessToken()!!, session.getRefreshToken()!!,
+                            session.getUserId()!!, session.getUserPhone()!!, name, session.getUserPhoto())
+                        toast("Profile saved")
+                        setResult(Activity.RESULT_OK); finish()
+                    } else toast("Save failed — check connection")
                 } catch (e: Exception) { toast("Error: ${e.message}") }
                 finally { progress.visibility = View.GONE; btnSave.isEnabled = true }
             }
         }
     }
 
-    private fun updatePreview(uri: Uri) {
-        try {
-            findViewById<ImageView>(R.id.imgProfileAvatar).setImageURI(uri)
-            findViewById<ImageView>(R.id.imgProfileBanner).setImageURI(uri)
-        } catch (_: Exception) {}
-    }
-
-    private fun toast(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) { finish(); return true }
-        return super.onOptionsItemSelected(item)
-    }
+    private fun toast(m: String) = Toast.makeText(this, m, Toast.LENGTH_SHORT).show()
+    override fun onOptionsItemSelected(item: MenuItem): Boolean { if (item.itemId == android.R.id.home) { finish(); return true }; return super.onOptionsItemSelected(item) }
 }

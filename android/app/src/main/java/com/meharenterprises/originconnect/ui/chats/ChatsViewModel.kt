@@ -2,9 +2,9 @@ package com.meharenterprises.originconnect.ui.chats
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.meharenterprises.originconnect.data.local.ContactNameCache
+import com.meharenterprises.originconnect.data.local.SessionManager
 import com.meharenterprises.originconnect.data.model.Conversation
 import com.meharenterprises.originconnect.data.remote.ApiService
-import com.meharenterprises.originconnect.data.local.SessionManager
 import com.meharenterprises.originconnect.data.socket.SocketManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,12 +37,10 @@ class ChatsViewModel @Inject constructor(
         _state.value = _state.value.copy(isLoading = true)
         try {
             val auth = session.getAuthHeader()
-            // Populate name cache from registered contacts
-            val contactsRes = api.getContacts(auth)
-            contactsRes.body()?.forEach { c ->
-                nameCache.putUserId(c.user.id, c.user.phone, c.user.displayName)
+            // Load contacts first to populate name+photo cache
+            api.getContacts(auth).body()?.forEach { c ->
+                nameCache.putUserId(c.user.id, c.user.phone, c.user.displayName, c.user.photoUrl)
             }
-            // Load conversations
             val list = api.getConversations(auth).body() ?: emptyList()
             _state.value = _state.value.copy(
                 conversations = list,
@@ -68,8 +66,7 @@ class ChatsViewModel @Inject constructor(
     private fun applyFilter(list: List<Conversation>, q: String): List<Conversation> {
         if (q.isBlank()) return list
         return list.filter {
-            val name = nameCache.resolveUserId(it.otherUserId) ?: ""
-            name.lowercase().contains(q.lowercase()) ||
+            (nameCache.resolveUserId(it.otherUserId) ?: "").lowercase().contains(q.lowercase()) ||
             it.lastMessageContent?.lowercase()?.contains(q.lowercase()) == true
         }
     }

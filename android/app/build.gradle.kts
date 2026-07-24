@@ -63,6 +63,7 @@ dependencies {
     implementation(libs.coroutines.android)
     implementation(libs.datastore)
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+    implementation("com.github.yalantis:ucrop:2.2.8")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation(libs.firebase.messaging)
 }

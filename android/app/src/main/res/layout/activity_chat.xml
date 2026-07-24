@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:orientation="vertical" android:fitsSystemWindows="true"
     android:background="#0D1418">
@@ -9,19 +8,25 @@
         android:layout_width="match_parent" android:layout_height="?attr/actionBarSize"
         android:background="#1F2C34">
         <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <TextView android:id="@+id/tvChatStatus"
-                android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:textSize="12sp" android:textColor="#00A884" android:visibility="gone"/>
+            android:orientation="horizontal" android:gravity="center_vertical">
+            <ImageView android:id="@+id/imgChatAvatar"
+                android:layout_width="36dp" android:layout_height="36dp"
+                android:src="@drawable/ic_person" android:background="@color/oc_surface"
+                android:scaleType="centerCrop" android:layout_marginEnd="10dp"/>
+            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView android:id="@+id/tvChatStatus"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:textSize="12sp" android:textColor="#00A884" android:visibility="gone"/>
+            </LinearLayout>
         </LinearLayout>
     </androidx.appcompat.widget.Toolbar>
 
     <TextView android:id="@+id/tvTyping"
         android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:text="typing..." android:textSize="12sp"
-        android:textColor="#00A884" android:fontFamily="sans-serif-italic"
-        android:paddingStart="16dp" android:paddingTop="4dp"
-        android:visibility="gone"/>
+        android:text="typing..." android:textSize="12sp" android:textColor="#00A884"
+        android:fontFamily="sans-serif-italic"
+        android:paddingStart="16dp" android:paddingTop="4dp" android:visibility="gone"/>
 
     <androidx.recyclerview.widget.RecyclerView android:id="@+id/recyclerMessages"
         android:layout_width="match_parent" android:layout_height="0dp"
@@ -31,21 +36,17 @@
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
         android:orientation="horizontal" android:gravity="center_vertical"
         android:padding="8dp" android:background="#1F2C34">
-
         <EditText android:id="@+id/etMessage"
             android:layout_width="0dp" android:layout_height="wrap_content"
             android:layout_weight="1" android:background="@drawable/bg_input"
-            android:hint="Message" android:textColor="#FFFFFF"
-            android:textColorHint="#8E8E93"
+            android:hint="Message" android:textColor="#FFFFFF" android:textColorHint="#8E8E93"
             android:paddingStart="16dp" android:paddingEnd="16dp"
             android:paddingTop="10dp" android:paddingBottom="10dp"
             android:maxLines="6" android:inputType="textMultiLine"
             android:layout_marginEnd="8dp"/>
-
         <ImageButton android:id="@+id/btnSend"
             android:layout_width="48dp" android:layout_height="48dp"
             android:src="@android:drawable/ic_menu_send"
-            android:backgroundTint="#00A884" android:tint="#FFFFFF"
-            android:padding="12dp"/>
+            android:backgroundTint="#00A884" android:tint="#FFFFFF" android:padding="12dp"/>
     </LinearLayout>
 </LinearLayout>

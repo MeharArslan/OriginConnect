@@ -10,6 +10,8 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.WindowCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
+import coil.transform.CircleCropTransformation
 import com.meharenterprises.originconnect.R
 import com.meharenterprises.originconnect.data.local.ContactNameCache
 import com.meharenterprises.originconnect.ui.chat.adapter.MessageAdapter
@@ -20,7 +22,6 @@ import javax.inject.Inject
 class ChatActivity : AppCompatActivity() {
     private val vm: ChatViewModel by viewModels()
     @Inject lateinit var nameCache: ContactNameCache
-    private lateinit var adapter: MessageAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,24 +30,29 @@ class ChatActivity : AppCompatActivity() {
 
         val convId  = intent.getStringExtra("CONVERSATION_ID") ?: ""
         val otherId = intent.getStringExtra("OTHER_USER_ID") ?: ""
-        val displayName = nameCache.resolveUserId(otherId)
-            ?: nameCache.resolvePhone(otherId)
-            ?: intent.getStringExtra("OTHER_USER_NAME") ?: ""
+        val displayName = nameCache.resolveUserId(otherId) ?: ""
+        val photoUrl    = nameCache.getPhotoUrl(otherId)
 
-        val toolbar  = findViewById<Toolbar>(R.id.chatToolbar)
-        val tvStatus = findViewById<TextView>(R.id.tvChatStatus)
+        val toolbar = findViewById<Toolbar>(R.id.chatToolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = displayName.ifEmpty { "Chat" }
 
-        adapter = MessageAdapter("")
+        // Show avatar in toolbar
+        val imgToolbar = findViewById<ImageView>(R.id.imgChatAvatar)
+        if (!photoUrl.isNullOrEmpty()) {
+            imgToolbar.load(photoUrl) { transformations(CircleCropTransformation()) }
+        }
+
+        val adapter  = MessageAdapter(vm.myId)
+        adapter.onDelete = { id, forEveryone -> vm.deleteMessage(id, forEveryone) }
         val recycler = findViewById<RecyclerView>(R.id.recyclerMessages)
         recycler.layoutManager = LinearLayoutManager(this).also { it.stackFromEnd = true }
         recycler.adapter = adapter
 
-        val etMsg   = findViewById<EditText>(R.id.etMessage)
-        val btnSend = findViewById<ImageButton>(R.id.btnSend)
-        val tvTyping= findViewById<TextView>(R.id.tvTyping)
+        val etMsg    = findViewById<EditText>(R.id.etMessage)
+        val btnSend  = findViewById<ImageButton>(R.id.btnSend)
+        val tvTyping = findViewById<TextView>(R.id.tvTyping)
 
         btnSend.setOnClickListener {
             val t = etMsg.text.toString().trim()
@@ -62,9 +68,7 @@ class ChatActivity : AppCompatActivity() {
             adapter.myId = vm.myId; adapter.submitList(list)
             if (list.isNotEmpty()) recycler.scrollToPosition(list.size - 1)
         }
-        vm.typing.observe(this) { isTyping ->
-            tvTyping.visibility = if (isTyping) View.VISIBLE else View.GONE
-        }
+        vm.typing.observe(this) { tvTyping.visibility = if (it) View.VISIBLE else View.GONE }
         vm.init(convId, otherId)
     }
 
