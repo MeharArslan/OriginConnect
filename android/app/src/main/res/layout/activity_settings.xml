@@ -86,7 +86,7 @@
             </LinearLayout>
 
             <View android:layout_width="match_parent" android:layout_height="8dp"
-                @color/oc_surface2/>
+                android:background="@color/oc_surface2"/>
 
             <LinearLayout android:id="@+id/rowLogout"
                 android:layout_width="match_parent" android:layout_height="56dp"
