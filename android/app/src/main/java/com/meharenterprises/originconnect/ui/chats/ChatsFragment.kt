@@ -41,7 +41,7 @@ class ChatsFragment : Fragment() {
         }
         _adapter = adapter
         recycler.layoutManager = LinearLayoutManager(requireContext())
-        recycler.adapter = adapter as RecyclerView.Adapter<*>
+        recycler.adapter = adapter
 
         swipe.setOnRefreshListener { vm.load() }
 
