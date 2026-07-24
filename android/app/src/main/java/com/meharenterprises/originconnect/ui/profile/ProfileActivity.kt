@@ -108,9 +108,7 @@ class ProfileActivity : AppCompatActivity() {
             // Load existing photo
             val photo = session.getUserPhoto()
             if (!photo.isNullOrEmpty()) {
-                try {
-                    coil.load(img, photo) { transformations(coil.transform.CircleCropTransformation()) }
-                } catch (_: Exception) {}
+                try { img.setImageURI(android.net.Uri.parse(photo)) } catch (_: Exception) {}
             }
         }
 
