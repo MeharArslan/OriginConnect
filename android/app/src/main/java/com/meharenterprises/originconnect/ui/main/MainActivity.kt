@@ -118,9 +118,7 @@ class MainActivity : AppCompatActivity() {
             true
         }
         R.id.action_settings -> { startActivity(Intent(this, SettingsActivity::class.java)); true }
-        R.id.action_profile  -> { startActivity(Intent(this, ProfileActivity::class.java)); true }
 R.id.action_new_group -> { Toast.makeText(this, "Group feature coming soon", Toast.LENGTH_SHORT).show(); true }
-        R.id.action_starred  -> { Toast.makeText(this, "Starred messages", Toast.LENGTH_SHORT).show(); true }
         R.id.action_archived -> { Toast.makeText(this, "Archived chats", Toast.LENGTH_SHORT).show(); true }
         else -> super.onOptionsItemSelected(item)
     }
