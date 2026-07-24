@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical">
+    <LinearLayout android:id="@+id/emptyCallsContainer"
+        android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1" android:orientation="vertical" android:gravity="center"
+        android:paddingStart="32dp" android:paddingEnd="32dp">
+        <ImageView android:layout_width="80dp" android:layout_height="80dp"
+            android:src="@drawable/ic_calls" android:alpha="0.3"/>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="No recent calls" android:textSize="18sp"
+            android:textColor="?android:textColorPrimary" android:textStyle="bold"
+            android:layout_marginTop="16dp"/>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="Your recent voice and video calls will appear here"
+            android:textSize="14sp" android:textColor="?android:textColorSecondary"
+            android:gravity="center" android:layout_marginTop="8dp"/>
+    </LinearLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerCalls"
+        android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1" android:visibility="gone"/>
+</LinearLayout>

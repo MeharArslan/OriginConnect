@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/chatsFragment" android:title="Chats" android:icon="@drawable/ic_chat"/>
+    <item android:id="@+id/updatesFragment" android:title="Updates" android:icon="@drawable/ic_updates"/>
+    <item android:id="@+id/communitiesFragment" android:title="Communities" android:icon="@drawable/ic_communities"/>
+    <item android:id="@+id/callsFragment" android:title="Calls" android:icon="@drawable/ic_calls"/>
+</menu>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/chatsFragment">
+    <fragment android:id="@+id/chatsFragment"
+        android:name="com.meharenterprises.originconnect.ui.chats.ChatsFragment"
+        android:label="Chats"/>
+    <fragment android:id="@+id/updatesFragment"
+        android:name="com.meharenterprises.originconnect.ui.updates.UpdatesFragment"
+        android:label="Updates"/>
+    <fragment android:id="@+id/communitiesFragment"
+        android:name="com.meharenterprises.originconnect.ui.communities.CommunitiesFragment"
+        android:label="Communities"/>
+    <fragment android:id="@+id/callsFragment"
+        android:name="com.meharenterprises.originconnect.ui.calls.CallsFragment"
+        android:label="Calls"/>
+</navigation>

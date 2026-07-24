@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="My Status" android:textSize="13sp" android:textColor="@color/oc_primary"
+            android:fontFamily="sans-serif-medium" android:paddingStart="16dp"
+            android:paddingEnd="16dp" android:paddingTop="16dp" android:paddingBottom="8dp"/>
+        <LinearLayout android:id="@+id/myStatusRow"
+            android:layout_width="match_parent" android:layout_height="72dp"
+            android:orientation="horizontal" android:gravity="center_vertical"
+            android:paddingStart="16dp" android:paddingEnd="16dp"
+            android:background="?attr/selectableItemBackground">
+            <FrameLayout android:layout_width="52dp" android:layout_height="52dp">
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/myAvatar"
+                    android:layout_width="52dp" android:layout_height="52dp"
+                    android:src="@drawable/ic_person"
+                    app:shapeAppearanceOverlay="@style/CircleImageView"/>
+            </FrameLayout>
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:orientation="vertical" android:layout_marginStart="16dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="My status" android:textSize="16sp"
+                    android:textColor="?android:textColorPrimary" android:textStyle="bold"/>
+                <TextView android:id="@+id/tvMyStatusHint"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Tap to add status update"
+                    android:textSize="14sp" android:textColor="?android:textColorSecondary"/>
+            </LinearLayout>
+        </LinearLayout>
+        <View android:layout_width="match_parent" android:layout_height="1dp"
+            android:background="?attr/colorSurfaceVariant" android:layout_marginVertical="8dp"/>
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:text="Recent updates" android:textSize="13sp" android:textColor="@color/oc_primary"
+            android:fontFamily="sans-serif-medium" android:paddingStart="16dp"
+            android:paddingEnd="16dp" android:paddingBottom="8dp"/>
+        <LinearLayout android:id="@+id/emptyUpdates"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:gravity="center"
+            android:paddingTop="48dp" android:paddingBottom="48dp"
+            android:paddingStart="32dp" android:paddingEnd="32dp">
+            <ImageView android:layout_width="80dp" android:layout_height="80dp"
+                android:src="@drawable/ic_updates" android:alpha="0.3"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="No recent updates" android:textSize="18sp"
+                android:textColor="?android:textColorPrimary" android:textStyle="bold"
+                android:layout_marginTop="16dp"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Status updates from your contacts will appear here"
+                android:textSize="14sp" android:textColor="?android:textColorSecondary"
+                android:gravity="center" android:layout_marginTop="8dp"/>
+        </LinearLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerUpdates"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false" android:visibility="gone"/>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>
