@@ -9,7 +9,10 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.*
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
 import com.meharenterprises.originconnect.R
 import com.meharenterprises.originconnect.data.model.Contact
 import com.meharenterprises.originconnect.ui.chat.ChatActivity
@@ -37,7 +40,7 @@ class ContactsActivity : AppCompatActivity() {
 
         val adapter = ContactsListAdapter { contact -> vm.openConversation(contact.user.id) }
         recycler.layoutManager = LinearLayoutManager(this)
-        recycler.adapter = adapter
+        recycler.adapter = adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         etSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
