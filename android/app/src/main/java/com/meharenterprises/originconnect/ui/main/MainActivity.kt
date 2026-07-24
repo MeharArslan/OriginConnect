@@ -22,6 +22,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.meharenterprises.originconnect.R
+import com.meharenterprises.originconnect.data.local.ContactNameCache
 import com.meharenterprises.originconnect.data.local.SessionManager
 import com.meharenterprises.originconnect.ui.chats.ChatsFragment
 import com.meharenterprises.originconnect.ui.profile.ProfileActivity
@@ -32,6 +33,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     @Inject lateinit var session: SessionManager
+    @Inject lateinit var nameCache: ContactNameCache
     private lateinit var navController: NavController
     private lateinit var fab: FloatingActionButton
     private lateinit var etSearch: EditText
@@ -40,17 +42,23 @@ class MainActivity : AppCompatActivity() {
     private val cameraPermission = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
-        if (granted) launchCamera()
+        if (granted) cameraLauncher.launch(null)
         else Toast.makeText(this, "Camera permission denied", Toast.LENGTH_SHORT).show()
     }
     private val cameraLauncher = registerForActivityResult(
         ActivityResultContracts.TakePicturePreview()
-    ) { /* bitmap captured, handle if needed */ }
+    ) { /* photo taken from toolbar camera */ }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, true)
         setContentView(R.layout.activity_main)
+
+        // Load device contacts into cache immediately on startup
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS)
+            == PackageManager.PERMISSION_GRANTED) {
+            nameCache.loadDeviceContacts()
+        }
 
         val toolbar = findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -111,23 +119,20 @@ class MainActivity : AppCompatActivity() {
         etSearch.clearFocus()
     }
 
-    private fun launchCamera() = cameraLauncher.launch(null)
-
-    private fun openCamera() {
-        when {
-            ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                == PackageManager.PERMISSION_GRANTED -> launchCamera()
-            else -> cameraPermission.launch(Manifest.permission.CAMERA)
-        }
-    }
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        R.id.action_camera   -> { openCamera(); true }
+        R.id.action_camera -> {
+            when {
+                ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                    == PackageManager.PERMISSION_GRANTED -> cameraLauncher.launch(null)
+                else -> cameraPermission.launch(Manifest.permission.CAMERA)
+            }
+            true
+        }
         R.id.action_settings -> { startActivity(Intent(this, SettingsActivity::class.java)); true }
         R.id.action_profile  -> { startActivity(Intent(this, ProfileActivity::class.java)); true }
         R.id.action_archived -> { Toast.makeText(this, "No archived chats", Toast.LENGTH_SHORT).show(); true }

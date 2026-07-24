@@ -2,14 +2,19 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="wrap_content"
     android:orientation="horizontal" android:gravity="start"
-    android:paddingHorizontal="8dp" android:paddingVertical="2dp">
+    android:paddingStart="8dp" android:paddingEnd="64dp"
+    android:paddingTop="2dp" android:paddingBottom="2dp">
     <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:orientation="vertical" android:background="@drawable/bg_recv"
-        android:paddingHorizontal="12dp" android:paddingVertical="8dp" android:maxWidth="260dp">
-        <TextView android:id="@+id/txtBody" android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:textColor="#FFFFFF" android:textSize="15sp"/>
-        <TextView android:id="@+id/txtTime" android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:textColor="#CC8E8E93"
-            android:textSize="11sp" android:layout_marginTop="2dp"/>
+        android:paddingStart="10dp" android:paddingEnd="10dp"
+        android:paddingTop="6dp" android:paddingBottom="4dp">
+        <TextView android:id="@+id/txtBody"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:textColor="#FFFFFF" android:textSize="15sp"
+            android:lineSpacingExtra="2dp"/>
+        <TextView android:id="@+id/txtTime"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:textColor="#BB8E8E93" android:textSize="11sp"
+            android:layout_gravity="end" android:layout_marginTop="2dp"/>
     </LinearLayout>
 </LinearLayout>

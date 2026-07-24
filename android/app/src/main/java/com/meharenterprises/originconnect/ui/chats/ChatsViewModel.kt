@@ -3,6 +3,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.meharenterprises.originconnect.data.model.Conversation
 import com.meharenterprises.originconnect.data.repository.ChatRepository
+import com.meharenterprises.originconnect.data.local.ContactNameCache
 import com.meharenterprises.originconnect.data.socket.SocketManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,6 +22,7 @@ data class ChatsUiState(
 @HiltViewModel
 class ChatsViewModel @Inject constructor(
     private val chatRepo: ChatRepository,
+    private val nameCache: ContactNameCache,
     private val socketManager: SocketManager
 ) : ViewModel() {
 
@@ -37,6 +39,11 @@ class ChatsViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true)
             val list = chatRepo.getConversations()
+            // Populate name cache for all conversations
+            list.forEach { conv ->
+                val cached = nameCache.resolveUserId(conv.otherUserId)
+                if (cached == null) nameCache.putUserId(conv.otherUserId, conv.otherUserId, conv.otherUserId)
+            }
             _state.value = _state.value.copy(
                 conversations = list,
                 filtered = applyFilter(list, _state.value.query),
