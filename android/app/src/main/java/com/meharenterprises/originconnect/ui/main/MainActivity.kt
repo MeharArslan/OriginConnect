@@ -22,6 +22,7 @@ import com.meharenterprises.originconnect.R
 import com.meharenterprises.originconnect.data.local.SessionManager
 import com.meharenterprises.originconnect.ui.auth.AuthActivity
 import com.meharenterprises.originconnect.ui.chats.ChatsFragment
+import com.meharenterprises.originconnect.ui.profile.ProfileActivity
 import com.meharenterprises.originconnect.ui.settings.SettingsActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -117,15 +118,8 @@ class MainActivity : AppCompatActivity() {
             true
         }
         R.id.action_settings -> { startActivity(Intent(this, SettingsActivity::class.java)); true }
-        R.id.action_profile  -> { startActivity(Intent(this, SettingsActivity::class.java)); true }
-        R.id.action_logout   -> {
-            CoroutineScope(Dispatchers.Main).launch {
-                session.clearSession()
-                val i = Intent(this@MainActivity, AuthActivity::class.java)
-                i.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(i)
-            }; true
-        }
+        R.id.action_profile  -> { startActivity(Intent(this, ProfileActivity::class.java)); true }
+R.id.action_new_group -> { Toast.makeText(this, "Group feature coming soon", Toast.LENGTH_SHORT).show(); true }
         R.id.action_starred  -> { Toast.makeText(this, "Starred messages", Toast.LENGTH_SHORT).show(); true }
         R.id.action_archived -> { Toast.makeText(this, "Archived chats", Toast.LENGTH_SHORT).show(); true }
         else -> super.onOptionsItemSelected(item)
