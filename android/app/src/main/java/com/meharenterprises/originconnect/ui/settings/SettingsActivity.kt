@@ -16,43 +16,31 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class SettingsActivity : AppCompatActivity() {
     @Inject lateinit var session: SessionManager
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, true)
         setContentView(R.layout.activity_settings)
-
         val tb = findViewById<Toolbar>(R.id.settingsToolbar)
         setSupportActionBar(tb)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = "Settings"
         tb.setNavigationOnClickListener { finish() }
-
-        findViewById<android.view.View>(R.id.rowProfile).setOnClickListener {
-            Toast.makeText(this, "Account settings coming soon", Toast.LENGTH_SHORT).show()
-        }
-        findViewById<android.view.View>(R.id.rowPrivacy).setOnClickListener {
-            Toast.makeText(this, "Privacy settings coming soon", Toast.LENGTH_SHORT).show()
-        }
-        findViewById<android.view.View>(R.id.rowNotifications).setOnClickListener {
-            Toast.makeText(this, "Notification settings coming soon", Toast.LENGTH_SHORT).show()
-        }
-        findViewById<android.view.View>(R.id.rowStorage).setOnClickListener {
-            Toast.makeText(this, "Storage settings coming soon", Toast.LENGTH_SHORT).show()
-        }
-        findViewById<android.view.View>(R.id.rowAppearance).setOnClickListener {
-            Toast.makeText(this, "Appearance settings coming soon", Toast.LENGTH_SHORT).show()
-        }
-        findViewById<android.view.View>(R.id.rowHelp).setOnClickListener {
-            Toast.makeText(this, "Help coming soon", Toast.LENGTH_SHORT).show()
-        }
-        findViewById<android.view.View>(R.id.rowLogout).setOnClickListener {
+        fun row(id: Int, action: () -> Unit) { try { findViewById<android.view.View>(id)?.setOnClickListener { action() } } catch (_: Exception) {} }
+        fun msg(t: String) = Toast.makeText(this, t, Toast.LENGTH_SHORT).show()
+        row(R.id.rowProfile)       { msg("Account settings coming soon") }
+        row(R.id.rowPrivacy)       { msg("Privacy settings coming soon") }
+        row(R.id.rowNotifications) { msg("Notification settings coming soon") }
+        row(R.id.rowStorage)       { msg("Storage settings coming soon") }
+        row(R.id.rowAppearance)    { msg("Appearance settings coming soon") }
+        row(R.id.rowHelp)          { msg("Help & support coming soon") }
+        row(R.id.rowLogout) {
             lifecycleScope.launch {
                 session.clearSession()
-                val i = Intent(this@SettingsActivity, AuthActivity::class.java)
-                i.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(i)
+                startActivity(Intent(this@SettingsActivity, AuthActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                })
             }
         }
     }
+    override fun onSupportNavigateUp(): Boolean { finish(); return true }
 }

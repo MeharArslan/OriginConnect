@@ -2,10 +2,13 @@ package com.meharenterprises.originconnect.ui.chat
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.MenuItem
 import android.view.View
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.core.view.WindowCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.meharenterprises.originconnect.R
@@ -19,10 +22,14 @@ class ChatActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, true)
         setContentView(R.layout.activity_chat)
         val convId = intent.getStringExtra("CONVERSATION_ID") ?: ""
         val otherId = intent.getStringExtra("OTHER_USER_ID") ?: ""
-        title = otherId.take(8)
+        val toolbar = findViewById<Toolbar>(R.id.chatToolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = otherId
         adapter = MessageAdapter("")
         val recycler = findViewById<RecyclerView>(R.id.recyclerMessages)
         recycler.layoutManager = LinearLayoutManager(this).also { it.stackFromEnd = true }
@@ -35,16 +42,19 @@ class ChatActivity : AppCompatActivity() {
             if (text.isNotEmpty()) { vm.sendMessage(text); etMessage.setText("") }
         }
         etMessage.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) { vm.sendTyping(s?.isNotEmpty() == true) }
+            override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+            override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) { vm.sendTyping(!s.isNullOrEmpty()) }
             override fun afterTextChanged(s: Editable?) {}
         })
-        vm.messages.observe(this) {
-            adapter.myId = vm.myId
-            adapter.submitList(it)
-            if (it.isNotEmpty()) recycler.scrollToPosition(it.size - 1)
+        vm.messages.observe(this) { list ->
+            adapter.myId = vm.myId; adapter.submitList(list)
+            if (list.isNotEmpty()) recycler.scrollToPosition(list.size - 1)
         }
         vm.typing.observe(this) { tvTyping.visibility = if (it) View.VISIBLE else View.GONE }
         vm.init(convId, otherId)
+    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) { finish(); return true }
+        return super.onOptionsItemSelected(item)
     }
 }
