@@ -1,14 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent"
-    android:orientation="vertical" android:background="@color/oc_bg">
-    <LinearLayout android:layout_width="match_parent" android:layout_height="56dp"
-        android:background="@color/oc_surface" android:gravity="center_vertical"
-        android:paddingHorizontal="16dp">
-        <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:text="Contacts" android:textSize="20sp" android:textStyle="bold"
-            android:textColor="@color/oc_text_primary"/>
+    android:orientation="vertical">
+    <androidx.appcompat.widget.Toolbar android:id="@+id/contactsToolbar"
+        android:layout_width="match_parent" android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorSurface"/>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="48dp"
+        android:orientation="horizontal" android:gravity="center_vertical"
+        android:layout_marginStart="12dp" android:layout_marginEnd="12dp"
+        android:layout_marginTop="8dp" android:layout_marginBottom="8dp"
+        android:background="@drawable/bg_search_bar"
+        android:paddingStart="14dp" android:paddingEnd="14dp">
+        <ImageView android:layout_width="18dp" android:layout_height="18dp"
+            android:src="@drawable/ic_search" android:alpha="0.6"/>
+        <EditText android:id="@+id/etContactSearch"
+            android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:background="@null"
+            android:hint="Search name or number"
+            android:textColor="?android:textColorPrimary"
+            android:textSize="14sp" android:layout_marginStart="10dp"
+            android:inputType="text" android:imeOptions="actionSearch" android:maxLines="1"/>
     </LinearLayout>
-    <androidx.recyclerview.widget.RecyclerView android:id="@+id/recyclerContacts"
-        android:layout_width="match_parent" android:layout_height="match_parent"/>
+    <FrameLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+        <ProgressBar android:id="@+id/contactsProgress"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_gravity="center" android:visibility="gone"/>
+        <TextView android:id="@+id/tvContactsEmpty"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_gravity="center" android:gravity="center"
+            android:textSize="14sp" android:textColor="?android:textColorSecondary"
+            android:paddingStart="32dp" android:paddingEnd="32dp"
+            android:visibility="gone" android:lineSpacingMultiplier="1.5"/>
+        <androidx.recyclerview.widget.RecyclerView android:id="@+id/recyclerContacts"
+            android:layout_width="match_parent" android:layout_height="match_parent"/>
+    </FrameLayout>
 </LinearLayout>

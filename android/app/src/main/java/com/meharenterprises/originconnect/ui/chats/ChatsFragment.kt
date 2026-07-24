@@ -43,12 +43,15 @@ class ChatsFragment : Fragment() {
         recycler.layoutManager = LinearLayoutManager(requireContext())
         recycler.adapter = adapter
 
+        val emptyState = view.findViewById<android.widget.LinearLayout>(R.id.emptyChats)
         swipe.setOnRefreshListener { vm.load() }
 
         viewLifecycleOwner.lifecycleScope.launch {
             vm.state.collectLatest { s ->
                 adapter.submitList(s.filtered)
                 swipe.isRefreshing = s.isLoading
+                emptyState.visibility = if (!s.isLoading && s.filtered.isEmpty()) android.view.View.VISIBLE else android.view.View.GONE
+                recycler.visibility = if (s.filtered.isEmpty()) android.view.View.GONE else android.view.View.VISIBLE
             }
         }
 
