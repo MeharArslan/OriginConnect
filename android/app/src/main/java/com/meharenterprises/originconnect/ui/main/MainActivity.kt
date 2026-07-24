@@ -1,13 +1,16 @@
 package com.meharenterprises.originconnect.ui.main
 import android.content.Intent
 import android.os.Bundle
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.navigation.NavController
@@ -31,6 +34,8 @@ class MainActivity : AppCompatActivity() {
     @Inject lateinit var session: SessionManager
     private lateinit var navController: NavController
     private lateinit var fab: FloatingActionButton
+    private lateinit var etSearch: EditText
+    private lateinit var btnClear: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,41 +52,54 @@ class MainActivity : AppCompatActivity() {
         bottomNav.setupWithNavController(navController)
 
         fab = findViewById(R.id.fab)
-        fab.setOnClickListener { startActivity(Intent(this, ContactsActivity::class.java)) }
+        fab.setOnClickListener {
+            hideKeyboard()
+            startActivity(Intent(this, ContactsActivity::class.java))
+        }
 
-        // Wire search bar
-        val etSearch = findViewById<EditText>(R.id.etMainSearch)
-        val btnClear = findViewById<ImageView>(R.id.btnClearSearch)
+        etSearch = findViewById(R.id.etMainSearch)
+        btnClear = findViewById(R.id.btnClearSearch)
 
         etSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
             override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
             override fun afterTextChanged(s: Editable?) {
-                val q = s.toString()
+                val q = s?.toString() ?: ""
                 btnClear.visibility = if (q.isNotEmpty()) View.VISIBLE else View.GONE
-                getCurrentChatsFragment()?.search(q)
+                getChatsFragment()?.search(q)
             }
         })
+
         btnClear.setOnClickListener {
             etSearch.setText("")
             btnClear.visibility = View.GONE
-            getCurrentChatsFragment()?.search("")
+            getChatsFragment()?.search("")
+            hideKeyboard()
         }
 
         navController.addOnDestinationChangedListener { _, dest, _ ->
             supportActionBar?.title = when (dest.id) {
-                R.id.chatsFragment       -> "OriginConnect"
-                R.id.updatesFragment     -> "Updates"
+                R.id.chatsFragment -> "OriginConnect"
+                R.id.updatesFragment -> "Updates"
                 R.id.communitiesFragment -> "Communities"
-                R.id.callsFragment       -> "Calls"
+                R.id.callsFragment -> "Calls"
                 else -> "OriginConnect"
             }
+            etSearch.setText("")
+            btnClear.visibility = View.GONE
+            hideKeyboard()
         }
     }
 
-    private fun getCurrentChatsFragment(): ChatsFragment? {
+    private fun getChatsFragment(): ChatsFragment? {
         val navHost = supportFragmentManager.findFragmentById(R.id.navHostFragment)
         return navHost?.childFragmentManager?.fragments?.firstOrNull() as? ChatsFragment
+    }
+
+    private fun hideKeyboard() {
+        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(etSearch.windowToken, 0)
+        etSearch.clearFocus()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -90,10 +108,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        R.id.action_camera   -> true  // camera handled by FAB context
+        R.id.action_camera -> {
+            try {
+                val i = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                if (i.resolveActivity(packageManager) != null) startActivity(i)
+                else Toast.makeText(this, "Camera not available", Toast.LENGTH_SHORT).show()
+            } catch (e: Exception) { Toast.makeText(this, "Camera error", Toast.LENGTH_SHORT).show() }
+            true
+        }
         R.id.action_settings -> { startActivity(Intent(this, SettingsActivity::class.java)); true }
-        R.id.action_starred  -> true
-        R.id.action_archived -> true
         R.id.action_profile  -> { startActivity(Intent(this, SettingsActivity::class.java)); true }
         R.id.action_logout   -> {
             CoroutineScope(Dispatchers.Main).launch {
@@ -103,6 +126,8 @@ class MainActivity : AppCompatActivity() {
                 startActivity(i)
             }; true
         }
+        R.id.action_starred  -> { Toast.makeText(this, "Starred messages", Toast.LENGTH_SHORT).show(); true }
+        R.id.action_archived -> { Toast.makeText(this, "Archived chats", Toast.LENGTH_SHORT).show(); true }
         else -> super.onOptionsItemSelected(item)
     }
 }
