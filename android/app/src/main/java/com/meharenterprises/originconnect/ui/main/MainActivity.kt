@@ -3,7 +3,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.WindowCompat
@@ -16,6 +15,7 @@ import com.meharenterprises.originconnect.R
 import com.meharenterprises.originconnect.data.local.SessionManager
 import com.meharenterprises.originconnect.ui.auth.AuthActivity
 import com.meharenterprises.originconnect.ui.chats.ChatsFragment
+import com.meharenterprises.originconnect.ui.settings.SettingsActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -32,10 +32,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, true)
         setContentView(R.layout.activity_main)
-        setSupportActionBar(findViewById(com.google.android.material.R.id.action_bar) ?: return)
 
         val toolbar = findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
+        supportActionBar?.title = "OriginConnect"
 
         val navHost = supportFragmentManager.findFragmentById(R.id.navHostFragment) as NavHostFragment
         navController = navHost.navController
@@ -52,17 +52,17 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.updatesFragment -> {
                     fab.show(); fab.text = "Add update"; fab.setIconResource(R.drawable.ic_camera)
-                    fab.setOnClickListener { Toast.makeText(this,"Add status",Toast.LENGTH_SHORT).show() }
+                    fab.setOnClickListener { startActivity(Intent(this, ContactsActivity::class.java)) }
                     supportActionBar?.title = "Updates"
                 }
                 R.id.communitiesFragment -> {
                     fab.show(); fab.text = "New community"; fab.setIconResource(R.drawable.ic_communities)
-                    fab.setOnClickListener { Toast.makeText(this,"New community",Toast.LENGTH_SHORT).show() }
+                    fab.setOnClickListener { startActivity(Intent(this, ContactsActivity::class.java)) }
                     supportActionBar?.title = "Communities"
                 }
                 R.id.callsFragment -> {
                     fab.show(); fab.text = "New call"; fab.setIconResource(R.drawable.ic_calls)
-                    fab.setOnClickListener { Toast.makeText(this,"New call",Toast.LENGTH_SHORT).show() }
+                    fab.setOnClickListener { startActivity(Intent(this, ContactsActivity::class.java)) }
                     supportActionBar?.title = "Calls"
                 }
             }
@@ -86,20 +86,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        R.id.action_camera -> { Toast.makeText(this,"Camera",Toast.LENGTH_SHORT).show(); true }
-        R.id.action_settings -> { Toast.makeText(this,"Settings",Toast.LENGTH_SHORT).show(); true }
-        R.id.action_starred -> { Toast.makeText(this,"Starred",Toast.LENGTH_SHORT).show(); true }
-        R.id.action_archived -> { Toast.makeText(this,"Archived",Toast.LENGTH_SHORT).show(); true }
-        R.id.action_profile -> { Toast.makeText(this,"Profile",Toast.LENGTH_SHORT).show(); true }
-        R.id.action_logout -> { logout(); true }
-        else -> super.onOptionsItemSelected(item)
-    }
-
-    private fun logout() {
-        CoroutineScope(Dispatchers.Main).launch {
-            session.clearSession()
-            startActivity(Intent(this@MainActivity, AuthActivity::class.java))
-            finishAffinity()
+        R.id.action_settings -> { startActivity(Intent(this, SettingsActivity::class.java)); true }
+        R.id.action_profile  -> { startActivity(Intent(this, SettingsActivity::class.java)); true }
+        R.id.action_logout   -> {
+            CoroutineScope(Dispatchers.Main).launch {
+                session.clearSession()
+                startActivity(Intent(this@MainActivity, AuthActivity::class.java))
+                finishAffinity()
+            }; true
         }
+        else -> super.onOptionsItemSelected(item)
     }
 }

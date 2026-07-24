@@ -1,9 +1,8 @@
 package com.meharenterprises.originconnect.ui.chats
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -31,7 +30,8 @@ class ChatsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val recycler = view.findViewById<RecyclerView>(R.id.recyclerChats)
-        val swipe = view.findViewById<SwipeRefreshLayout>(R.id.swipeRefresh)
+        val swipe    = view.findViewById<SwipeRefreshLayout>(R.id.swipeRefresh)
+        val empty    = view.findViewById<LinearLayout>(R.id.emptyChats)
 
         val adapter = ConversationAdapter { conv: Conversation ->
             startActivity(Intent(requireContext(), ChatActivity::class.java).apply {
@@ -42,28 +42,25 @@ class ChatsFragment : Fragment() {
         _adapter = adapter
         recycler.layoutManager = LinearLayoutManager(requireContext())
         recycler.adapter = adapter
-
-        val emptyState = view.findViewById<android.widget.LinearLayout>(R.id.emptyChats)
         swipe.setOnRefreshListener { vm.load() }
 
         viewLifecycleOwner.lifecycleScope.launch {
             vm.state.collectLatest { s ->
                 adapter.submitList(s.filtered)
                 swipe.isRefreshing = s.isLoading
-                emptyState.visibility = if (!s.isLoading && s.filtered.isEmpty()) android.view.View.VISIBLE else android.view.View.GONE
-                recycler.visibility = if (s.filtered.isEmpty()) android.view.View.GONE else android.view.View.VISIBLE
+                val showEmpty = !s.isLoading && s.filtered.isEmpty()
+                empty.visibility   = if (showEmpty) View.VISIBLE else View.GONE
+                recycler.visibility = if (showEmpty) View.GONE   else View.VISIBLE
             }
         }
-
         viewLifecycleOwner.lifecycleScope.launch {
             val token = session.getAccessToken() ?: return@launch
             vm.connectSocket(token)
         }
-
         vm.load()
     }
 
     override fun onResume() { super.onResume(); vm.load() }
     override fun onDestroyView() { super.onDestroyView(); _adapter = null }
-    fun search(query: String) = vm.search(query)
+    fun search(q: String) = vm.search(q)
 }
