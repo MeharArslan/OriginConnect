@@ -72,8 +72,7 @@ class ContactsActivity : AppCompatActivity() {
                             recycler.visibility = View.GONE
                             tvEmpty.visibility = View.VISIBLE
                             tvEmpty.text = if (state.all.isEmpty())
-                                "No OriginConnect users found in your contacts.
-Share OriginConnect with friends to get started."
+                                "No OriginConnect users found in your contacts. Share OriginConnect with friends to get started."
                             else "No contacts match your search."
                         } else {
                             tvEmpty.visibility = View.GONE
@@ -84,9 +83,7 @@ Share OriginConnect with friends to get started."
                     is ContactsUiState.Err -> {
                         progress.visibility = View.GONE
                         tvEmpty.visibility = View.VISIBLE
-                        tvEmpty.text = "Error: ${state.msg}
-
-Tap to retry"
+                        tvEmpty.text = "Error: ${state.msg}. Tap to retry."
                         tvEmpty.setOnClickListener { requestContactsPermission() }
                     }
                 }
