@@ -4,34 +4,48 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:fitsSystemWindows="true">
+
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent" android:layout_height="wrap_content"
         android:background="?attr/colorSurface" app:elevation="0dp">
+
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent" android:layout_height="?attr/actionBarSize"
             app:titleTextColor="?attr/colorOnSurface" android:background="?attr/colorSurface"/>
-        <LinearLayout
-            android:layout_width="match_parent" android:layout_height="48dp"
+
+        <!-- Functional search bar -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="48dp"
             android:orientation="horizontal" android:gravity="center_vertical"
             android:layout_marginStart="12dp" android:layout_marginEnd="12dp"
-            android:layout_marginBottom="10dp" android:background="@drawable/bg_search_bar"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/bg_search_bar"
             android:paddingStart="14dp" android:paddingEnd="14dp">
             <ImageView android:layout_width="18dp" android:layout_height="18dp"
                 android:src="@drawable/ic_search" android:alpha="0.6"/>
-            <TextView android:layout_width="0dp" android:layout_height="wrap_content"
-                android:layout_weight="1" android:text="Search chats"
-                android:textColor="?android:textColorSecondary" android:textSize="14sp"
-                android:layout_marginStart="10dp"/>
+            <EditText android:id="@+id/etMainSearch"
+                android:layout_width="0dp" android:layout_height="match_parent"
+                android:layout_weight="1" android:background="@null"
+                android:hint="Search chats"
+                android:textColor="?android:textColorPrimary"
+                android:textSize="14sp" android:layout_marginStart="10dp"
+                android:inputType="text" android:imeOptions="actionSearch"
+                android:maxLines="1"/>
+            <ImageView android:id="@+id/btnClearSearch"
+                android:layout_width="18dp" android:layout_height="18dp"
+                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                android:alpha="0.6" android:visibility="gone"/>
         </LinearLayout>
     </com.google.android.material.appbar.AppBarLayout>
+
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/navHostFragment"
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent" android:layout_height="match_parent"
         app:defaultNavHost="true" app:navGraph="@navigation/nav_graph"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"
         android:layout_width="match_parent" android:layout_height="wrap_content"
@@ -40,12 +54,17 @@
         app:itemIconTint="@color/nav_item_color"
         app:itemTextColor="@color/nav_item_color"
         app:labelVisibilityMode="labeled" app:elevation="8dp"/>
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+
+    <!-- WhatsApp-style FAB: green circle with compose icon -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_marginEnd="16dp" android:layout_marginBottom="80dp"
-        android:text="New message" android:textColor="#FFFFFF"
-        app:icon="@drawable/ic_chat" app:iconTint="#FFFFFF"
-        app:backgroundTint="@color/oc_primary" app:elevation="6dp"/>
+        android:layout_marginEnd="20dp" android:layout_marginBottom="84dp"
+        android:src="@drawable/ic_compose"
+        app:backgroundTint="#00A884"
+        app:tint="#FFFFFF"
+        app:fabSize="normal"
+        app:elevation="6dp"/>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

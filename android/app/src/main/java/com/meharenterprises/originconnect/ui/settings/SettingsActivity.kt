@@ -22,20 +22,6 @@ class SettingsActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, true)
         setContentView(R.layout.activity_settings)
 
-        val rowTitles = mapOf(
-            R.id.rowProfile to "Account",
-            R.id.rowPrivacy to "Privacy",
-            R.id.rowNotifications to "Notifications",
-            R.id.rowStorage to "Storage and data",
-            R.id.rowAppearance to "Appearance",
-            R.id.rowHelp to "Help",
-            R.id.rowLogout to "Log out"
-        )
-        rowTitles.forEach { (id, title) ->
-            findViewById<android.widget.TextView>(id)
-                ?.parent?.let { (it as? android.view.ViewGroup)?.findViewById<android.widget.TextView>(R.id.tvSettingsTitle) }
-                ?.text = title
-        }
         val tb = findViewById<Toolbar>(R.id.settingsToolbar)
         setSupportActionBar(tb)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -43,28 +29,29 @@ class SettingsActivity : AppCompatActivity() {
         tb.setNavigationOnClickListener { finish() }
 
         findViewById<android.view.View>(R.id.rowProfile).setOnClickListener {
-            Toast.makeText(this, "Edit Profile", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Account settings coming soon", Toast.LENGTH_SHORT).show()
         }
         findViewById<android.view.View>(R.id.rowPrivacy).setOnClickListener {
-            Toast.makeText(this, "Privacy Settings", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Privacy settings coming soon", Toast.LENGTH_SHORT).show()
         }
         findViewById<android.view.View>(R.id.rowNotifications).setOnClickListener {
-            Toast.makeText(this, "Notification Settings", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Notification settings coming soon", Toast.LENGTH_SHORT).show()
         }
         findViewById<android.view.View>(R.id.rowStorage).setOnClickListener {
-            Toast.makeText(this, "Storage & Data", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Storage settings coming soon", Toast.LENGTH_SHORT).show()
         }
         findViewById<android.view.View>(R.id.rowAppearance).setOnClickListener {
-            Toast.makeText(this, "Appearance", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Appearance settings coming soon", Toast.LENGTH_SHORT).show()
         }
         findViewById<android.view.View>(R.id.rowHelp).setOnClickListener {
-            Toast.makeText(this, "Help & Support", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Help coming soon", Toast.LENGTH_SHORT).show()
         }
         findViewById<android.view.View>(R.id.rowLogout).setOnClickListener {
             lifecycleScope.launch {
                 session.clearSession()
-                startActivity(Intent(this@SettingsActivity, AuthActivity::class.java))
-                finishAffinity()
+                val i = Intent(this@SettingsActivity, AuthActivity::class.java)
+                i.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(i)
             }
         }
     }

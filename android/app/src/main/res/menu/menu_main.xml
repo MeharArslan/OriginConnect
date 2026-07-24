@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/action_search" android:title="Search"
-        android:icon="@drawable/ic_search" app:showAsAction="always"
-        app:actionViewClass="androidx.appcompat.widget.SearchView"/>
     <item android:id="@+id/action_camera" android:title="Camera"
         android:icon="@drawable/ic_camera" app:showAsAction="always"/>
     <item android:id="@+id/action_settings" android:title="Settings" app:showAsAction="never"/>
-    <item android:id="@+id/action_linked_devices" android:title="Linked Devices" app:showAsAction="never"/>
-    <item android:id="@+id/action_starred" android:title="Starred Messages" app:showAsAction="never"/>
+    <item android:id="@+id/action_starred"  android:title="Starred Messages" app:showAsAction="never"/>
     <item android:id="@+id/action_archived" android:title="Archived" app:showAsAction="never"/>
-    <item android:id="@+id/action_profile" android:title="Profile" app:showAsAction="never"/>
-    <item android:id="@+id/action_logout" android:title="Logout" app:showAsAction="never"/>
+    <item android:id="@+id/action_profile"  android:title="Profile" app:showAsAction="never"/>
+    <item android:id="@+id/action_logout"   android:title="Logout" app:showAsAction="never"/>
 </menu>

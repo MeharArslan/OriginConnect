@@ -13,24 +13,91 @@
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
             android:orientation="vertical" android:paddingTop="8dp">
 
-            <include layout="@layout/item_settings_row"
-                android:id="@+id/rowProfile"/>
-            <include layout="@layout/item_settings_row"
-                android:id="@+id/rowPrivacy"/>
-            <include layout="@layout/item_settings_row"
-                android:id="@+id/rowNotifications"/>
-            <include layout="@layout/item_settings_row"
-                android:id="@+id/rowStorage"/>
-            <include layout="@layout/item_settings_row"
-                android:id="@+id/rowAppearance"/>
-            <include layout="@layout/item_settings_row"
-                android:id="@+id/rowHelp"/>
+            <LinearLayout android:id="@+id/rowProfile"
+                android:layout_width="match_parent" android:layout_height="56dp"
+                android:orientation="horizontal" android:gravity="center_vertical"
+                android:paddingStart="20dp" android:paddingEnd="20dp"
+                android:background="?attr/selectableItemBackground">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:text="Account"
+                    android:textSize="16sp" android:textColor="?android:textColorPrimary"/>
+                <ImageView android:layout_width="18dp" android:layout_height="18dp"
+                    android:src="@drawable/ic_arrow_forward" android:alpha="0.4"/>
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/rowPrivacy"
+                android:layout_width="match_parent" android:layout_height="56dp"
+                android:orientation="horizontal" android:gravity="center_vertical"
+                android:paddingStart="20dp" android:paddingEnd="20dp"
+                android:background="?attr/selectableItemBackground">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:text="Privacy"
+                    android:textSize="16sp" android:textColor="?android:textColorPrimary"/>
+                <ImageView android:layout_width="18dp" android:layout_height="18dp"
+                    android:src="@drawable/ic_arrow_forward" android:alpha="0.4"/>
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/rowNotifications"
+                android:layout_width="match_parent" android:layout_height="56dp"
+                android:orientation="horizontal" android:gravity="center_vertical"
+                android:paddingStart="20dp" android:paddingEnd="20dp"
+                android:background="?attr/selectableItemBackground">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:text="Notifications"
+                    android:textSize="16sp" android:textColor="?android:textColorPrimary"/>
+                <ImageView android:layout_width="18dp" android:layout_height="18dp"
+                    android:src="@drawable/ic_arrow_forward" android:alpha="0.4"/>
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/rowStorage"
+                android:layout_width="match_parent" android:layout_height="56dp"
+                android:orientation="horizontal" android:gravity="center_vertical"
+                android:paddingStart="20dp" android:paddingEnd="20dp"
+                android:background="?attr/selectableItemBackground">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:text="Storage and data"
+                    android:textSize="16sp" android:textColor="?android:textColorPrimary"/>
+                <ImageView android:layout_width="18dp" android:layout_height="18dp"
+                    android:src="@drawable/ic_arrow_forward" android:alpha="0.4"/>
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/rowAppearance"
+                android:layout_width="match_parent" android:layout_height="56dp"
+                android:orientation="horizontal" android:gravity="center_vertical"
+                android:paddingStart="20dp" android:paddingEnd="20dp"
+                android:background="?attr/selectableItemBackground">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:text="Appearance"
+                    android:textSize="16sp" android:textColor="?android:textColorPrimary"/>
+                <ImageView android:layout_width="18dp" android:layout_height="18dp"
+                    android:src="@drawable/ic_arrow_forward" android:alpha="0.4"/>
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/rowHelp"
+                android:layout_width="match_parent" android:layout_height="56dp"
+                android:orientation="horizontal" android:gravity="center_vertical"
+                android:paddingStart="20dp" android:paddingEnd="20dp"
+                android:background="?attr/selectableItemBackground">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:text="Help"
+                    android:textSize="16sp" android:textColor="?android:textColorPrimary"/>
+                <ImageView android:layout_width="18dp" android:layout_height="18dp"
+                    android:src="@drawable/ic_arrow_forward" android:alpha="0.4"/>
+            </LinearLayout>
 
             <View android:layout_width="match_parent" android:layout_height="8dp"
                 android:background="?attr/colorSurfaceVariant"/>
 
-            <include layout="@layout/item_settings_row"
-                android:id="@+id/rowLogout"/>
+            <LinearLayout android:id="@+id/rowLogout"
+                android:layout_width="match_parent" android:layout_height="56dp"
+                android:orientation="horizontal" android:gravity="center_vertical"
+                android:paddingStart="20dp" android:paddingEnd="20dp"
+                android:background="?attr/selectableItemBackground">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:text="Log out"
+                    android:textSize="16sp" android:textColor="#FF453A"/>
+            </LinearLayout>
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </LinearLayout>
