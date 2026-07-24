@@ -13,8 +13,8 @@ android {
         applicationId = "com.meharenterprises.originconnect"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 10
+        versionName = "1.1.0"
         buildConfigField("String", "BASE_URL", "\"http://187.127.145.48:3000/api/v1/\"")
         buildConfigField("String", "SOCKET_URL", "\"http://187.127.145.48:3000\"")
     }
