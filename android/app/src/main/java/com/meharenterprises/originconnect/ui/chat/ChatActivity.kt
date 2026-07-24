@@ -2,8 +2,7 @@ package com.meharenterprises.originconnect.ui.chat
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.MenuItem
-import android.view.View
+import android.view.*
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -21,6 +20,7 @@ import javax.inject.Inject
 class ChatActivity : AppCompatActivity() {
     private val vm: ChatViewModel by viewModels()
     @Inject lateinit var nameCache: ContactNameCache
+    private lateinit var adapter: MessageAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,41 +29,42 @@ class ChatActivity : AppCompatActivity() {
 
         val convId  = intent.getStringExtra("CONVERSATION_ID") ?: ""
         val otherId = intent.getStringExtra("OTHER_USER_ID") ?: ""
-
-        // Resolve display name: local contact name > backend name > last 8 chars
         val displayName = nameCache.resolveUserId(otherId)
-            ?: otherId.takeLast(8)
+            ?: nameCache.resolvePhone(otherId)
+            ?: intent.getStringExtra("OTHER_USER_NAME") ?: ""
 
-        val toolbar = findViewById<Toolbar>(R.id.chatToolbar)
+        val toolbar  = findViewById<Toolbar>(R.id.chatToolbar)
+        val tvStatus = findViewById<TextView>(R.id.tvChatStatus)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title = displayName
+        supportActionBar?.title = displayName.ifEmpty { "Chat" }
 
-        val adapter = MessageAdapter("")
+        adapter = MessageAdapter("")
         val recycler = findViewById<RecyclerView>(R.id.recyclerMessages)
         recycler.layoutManager = LinearLayoutManager(this).also { it.stackFromEnd = true }
         recycler.adapter = adapter
 
-        val etMessage = findViewById<EditText>(R.id.etMessage)
-        val btnSend   = findViewById<ImageButton>(R.id.btnSend)
-        val tvTyping  = findViewById<TextView>(R.id.tvTyping)
+        val etMsg   = findViewById<EditText>(R.id.etMessage)
+        val btnSend = findViewById<ImageButton>(R.id.btnSend)
+        val tvTyping= findViewById<TextView>(R.id.tvTyping)
 
         btnSend.setOnClickListener {
-            val text = etMessage.text.toString().trim()
-            if (text.isNotEmpty()) { vm.sendMessage(text); etMessage.setText("") }
+            val t = etMsg.text.toString().trim()
+            if (t.isNotEmpty()) { vm.sendMessage(t); etMsg.setText("") }
         }
-        etMessage.addTextChangedListener(object : TextWatcher {
+        etMsg.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
             override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) { vm.sendTyping(!s.isNullOrEmpty()) }
             override fun afterTextChanged(s: Editable?) {}
         })
 
         vm.messages.observe(this) { list ->
-            adapter.myId = vm.myId
-            adapter.submitList(list)
+            adapter.myId = vm.myId; adapter.submitList(list)
             if (list.isNotEmpty()) recycler.scrollToPosition(list.size - 1)
         }
-        vm.typing.observe(this) { tvTyping.visibility = if (it) View.VISIBLE else View.GONE }
+        vm.typing.observe(this) { isTyping ->
+            tvTyping.visibility = if (isTyping) View.VISIBLE else View.GONE
+        }
         vm.init(convId, otherId)
     }
 

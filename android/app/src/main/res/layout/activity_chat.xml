@@ -1,31 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent" android:layout_height="match_parent"
-    android:orientation="vertical" android:fitsSystemWindows="true">
+    android:orientation="vertical" android:fitsSystemWindows="true"
+    android:background="#0D1418">
+
     <androidx.appcompat.widget.Toolbar android:id="@+id/chatToolbar"
         android:layout_width="match_parent" android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorSurface"/>
-    <TextView android:id="@+id/tvTyping" android:layout_width="wrap_content"
-        android:layout_height="wrap_content" android:text="typing..."
-        android:textColor="@color/oc_text_secondary" android:textSize="12sp"
-        android:paddingStart="16dp" android:paddingEnd="16dp"
-        android:paddingTop="2dp" android:visibility="gone"/>
+        android:background="#1F2C34">
+        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView android:id="@+id/tvChatStatus"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:textSize="12sp" android:textColor="#00A884" android:visibility="gone"/>
+        </LinearLayout>
+    </androidx.appcompat.widget.Toolbar>
+
+    <TextView android:id="@+id/tvTyping"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="typing..." android:textSize="12sp"
+        android:textColor="#00A884" android:fontFamily="sans-serif-italic"
+        android:paddingStart="16dp" android:paddingTop="4dp"
+        android:visibility="gone"/>
+
     <androidx.recyclerview.widget.RecyclerView android:id="@+id/recyclerMessages"
         android:layout_width="match_parent" android:layout_height="0dp"
-        android:layout_weight="1" android:padding="8dp" android:clipToPadding="false"/>
+        android:layout_weight="1" android:paddingTop="8dp" android:paddingBottom="8dp"
+        android:clipToPadding="false"/>
+
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
         android:orientation="horizontal" android:gravity="center_vertical"
-        android:padding="8dp" android:background="?attr/colorSurface">
-        <EditText android:id="@+id/etMessage" android:layout_width="0dp"
-            android:layout_height="wrap_content" android:layout_weight="1"
-            android:background="@drawable/bg_input" android:hint="Message"
-            android:textColor="?android:textColorPrimary"
+        android:padding="8dp" android:background="#1F2C34">
+
+        <EditText android:id="@+id/etMessage"
+            android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:background="@drawable/bg_input"
+            android:hint="Message" android:textColor="#FFFFFF"
+            android:textColorHint="#8E8E93"
             android:paddingStart="16dp" android:paddingEnd="16dp"
-            android:paddingTop="12dp" android:paddingBottom="12dp"
-            android:maxLines="4" android:inputType="textMultiLine"
+            android:paddingTop="10dp" android:paddingBottom="10dp"
+            android:maxLines="6" android:inputType="textMultiLine"
             android:layout_marginEnd="8dp"/>
-        <ImageButton android:id="@+id/btnSend" android:layout_width="48dp"
-            android:layout_height="48dp" android:src="@android:drawable/ic_menu_send"
-            android:backgroundTint="#00A884" android:tint="#FFFFFF" android:padding="12dp"/>
+
+        <ImageButton android:id="@+id/btnSend"
+            android:layout_width="48dp" android:layout_height="48dp"
+            android:src="@android:drawable/ic_menu_send"
+            android:backgroundTint="#00A884" android:tint="#FFFFFF"
+            android:padding="12dp"/>
     </LinearLayout>
 </LinearLayout>

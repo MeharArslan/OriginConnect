@@ -1,6 +1,10 @@
 package com.meharenterprises.originconnect.ui.chat.adapter
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.view.*
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -12,6 +16,8 @@ import java.util.*
 class MessageAdapter(var myId: String) :
     ListAdapter<Message, RecyclerView.ViewHolder>(DIFF) {
 
+    var onDelete: ((String, Boolean) -> Unit)? = null
+
     companion object {
         const val SENT = 1; const val RECV = 2
         val DIFF = object : DiffUtil.ItemCallback<Message>() {
@@ -21,9 +27,9 @@ class MessageAdapter(var myId: String) :
     }
 
     inner class SentVH(v: View) : RecyclerView.ViewHolder(v) {
-        val body:   TextView  = v.findViewById(R.id.txtBody)
-        val time:   TextView  = v.findViewById(R.id.txtTime)
-        val status: ImageView = v.findViewById(R.id.txtStatus)
+        val body: TextView   = v.findViewById(R.id.txtBody)
+        val time: TextView   = v.findViewById(R.id.txtTime)
+        val tick: ImageView  = v.findViewById(R.id.txtStatus)
     }
     inner class RecvVH(v: View) : RecyclerView.ViewHolder(v) {
         val body: TextView = v.findViewById(R.id.txtBody)
@@ -46,23 +52,42 @@ class MessageAdapter(var myId: String) :
         val time = formatTime(msg.createdAt)
         when (h) {
             is SentVH -> {
-                h.body.text = body
-                h.time.text = time
-                val icon = when (msg.status) {
-                    "read"      -> R.drawable.ic_tick_double
-                    "delivered" -> R.drawable.ic_tick_double
-                    "sent"      -> R.drawable.ic_tick_single
-                    else        -> R.drawable.ic_tick_single
+                h.body.text = body; h.time.text = time
+                when (msg.status) {
+                    "read"      -> { h.tick.setImageResource(R.drawable.ic_tick_double); h.tick.setColorFilter(0xFF4FC3F7.toInt()) }
+                    "delivered" -> { h.tick.setImageResource(R.drawable.ic_tick_double); h.tick.clearColorFilter() }
+                    else        -> { h.tick.setImageResource(R.drawable.ic_tick_single); h.tick.clearColorFilter() }
                 }
-                h.status.setImageResource(icon)
-                if (msg.status == "read") {
-                    h.status.setColorFilter(h.status.context.getColor(R.color.oc_primary))
-                } else {
-                    h.status.setColorFilter(0xBBFFFFFF.toInt())
-                }
+                h.itemView.setOnLongClickListener { showMenu(h.itemView.context, msg, true); true }
             }
-            is RecvVH -> { h.body.text = body; h.time.text = time }
+            is RecvVH -> {
+                h.body.text = body; h.time.text = time
+                h.itemView.setOnLongClickListener { showMenu(h.itemView.context, msg, false); true }
+            }
         }
+    }
+
+    private fun showMenu(ctx: Context, msg: Message, isMine: Boolean) {
+        val options = mutableListOf("Copy", "Reply")
+        if (isMine) {
+            options.add("Delete for Me")
+            options.add("Delete for Everyone")
+        } else {
+            options.add("Delete for Me")
+        }
+        AlertDialog.Builder(ctx)
+            .setItems(options.toTypedArray()) { _, which ->
+                when (options[which]) {
+                    "Copy" -> {
+                        val cm = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                        cm.setPrimaryClip(ClipData.newPlainText("msg", msg.content ?: ""))
+                        Toast.makeText(ctx, "Copied", Toast.LENGTH_SHORT).show()
+                    }
+                    "Delete for Me"       -> onDelete?.invoke(msg.id, false)
+                    "Delete for Everyone" -> onDelete?.invoke(msg.id, true)
+                    "Reply" -> Toast.makeText(ctx, "Reply — coming soon", Toast.LENGTH_SHORT).show()
+                }
+            }.show()
     }
 
     private fun formatTime(iso: String): String = try {

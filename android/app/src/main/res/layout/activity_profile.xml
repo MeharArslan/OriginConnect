@@ -2,62 +2,84 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent" android:layout_height="match_parent"
-    android:orientation="vertical" android:fitsSystemWindows="true">
+    android:orientation="vertical" android:fitsSystemWindows="true"
+    android:background="?attr/colorBackground">
+
     <androidx.appcompat.widget.Toolbar android:id="@+id/profileToolbar"
         android:layout_width="match_parent" android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorSurface"/>
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-            android:orientation="vertical" android:padding="24dp">
-            <!-- Avatar with edit overlay -->
-            <FrameLayout android:layout_width="96dp" android:layout_height="96dp"
-                android:layout_gravity="center_horizontal" android:layout_marginBottom="4dp">
-                <ImageView android:id="@+id/imgProfileAvatar"
-                    android:layout_width="96dp" android:layout_height="96dp"
-                    android:src="@drawable/ic_person" android:scaleType="centerCrop"
-                    android:background="@color/oc_surface" android:padding="16dp"/>
-                <View android:layout_width="match_parent" android:layout_height="match_parent"
-                    android:background="#66000000"/>
-                <ImageView android:layout_width="24dp" android:layout_height="24dp"
-                    android:layout_gravity="center" android:src="@drawable/ic_camera"/>
+
+    <!-- Profile photo banner -->
+    <FrameLayout android:layout_width="match_parent" android:layout_height="200dp"
+        android:background="#1C2733">
+        <ImageView android:id="@+id/imgProfileBanner"
+            android:layout_width="match_parent" android:layout_height="match_parent"
+            android:scaleType="centerCrop" android:alpha="0.3"/>
+        <FrameLayout android:layout_width="100dp" android:layout_height="100dp"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginBottom="-50dp">
+            <ImageView android:id="@+id/imgProfileAvatar"
+                android:layout_width="100dp" android:layout_height="100dp"
+                android:src="@drawable/ic_person" android:background="@color/oc_surface"
+                android:scaleType="centerCrop" android:padding="20dp"/>
+            <FrameLayout android:layout_width="32dp" android:layout_height="32dp"
+                android:layout_gravity="bottom|end"
+                android:background="@color/oc_primary">
+                <ImageView android:layout_width="match_parent" android:layout_height="match_parent"
+                    android:src="@drawable/ic_camera" android:padding="6dp"/>
             </FrameLayout>
-            <!-- Camera / Gallery -->
-            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal" android:orientation="horizontal"
-                android:layout_marginBottom="24dp">
-                <TextView android:id="@+id/tvCameraOption"
-                    android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Camera" android:textColor="@color/oc_primary"
-                    android:textSize="13sp" android:padding="8dp"
-                    android:background="?attr/selectableItemBackground"/>
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="  |  " android:textColor="?android:textColorSecondary" android:textSize="13sp"/>
-                <TextView android:id="@+id/tvGalleryOption"
-                    android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="Gallery" android:textColor="@color/oc_primary"
-                    android:textSize="13sp" android:padding="8dp"
-                    android:background="?attr/selectableItemBackground"/>
-            </LinearLayout>
-            <!-- Phone (read only) -->
+        </FrameLayout>
+    </FrameLayout>
+
+    <!-- Picker buttons -->
+    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal" android:orientation="horizontal"
+        android:layout_marginTop="60dp" android:layout_marginBottom="8dp">
+        <Button android:id="@+id/btnCamera"
+            android:layout_width="wrap_content" android:layout_height="36dp"
+            android:text="Camera" app:backgroundTint="@color/oc_surface"
+            android:textColor="@color/oc_primary" android:textSize="13sp"
+            android:layout_marginEnd="8dp" app:strokeColor="@color/oc_primary"
+            app:strokeWidth="1dp"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+        <Button android:id="@+id/btnGallery"
+            android:layout_width="wrap_content" android:layout_height="36dp"
+            android:text="Gallery" app:backgroundTint="@color/oc_surface"
+            android:textColor="@color/oc_primary" android:textSize="13sp"
+            app:strokeColor="@color/oc_primary" app:strokeWidth="1dp"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+    </LinearLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:paddingHorizontal="20dp">
+
+            <!-- Phone -->
             <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:text="Phone Number" android:textSize="12sp"
-                android:textColor="@color/oc_primary" android:layout_marginBottom="2dp"/>
+                android:text="Phone number" android:textSize="12sp"
+                android:textColor="@color/oc_primary" android:layout_marginTop="8dp"/>
             <TextView android:id="@+id/tvProfilePhone"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:textSize="16sp" android:textColor="?android:textColorSecondary"
-                android:layout_marginBottom="20dp" android:paddingStart="4dp"/>
+                android:textSize="16sp" android:textColor="?android:textColorPrimary"
+                android:paddingVertical="8dp"/>
+
+            <View android:layout_width="match_parent" android:layout_height="1dp"
+                android:background="@color/oc_surface2" android:layout_marginBottom="8dp"/>
+
             <!-- Name -->
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/OcOutlinedField"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:hint="Your name" android:layout_marginBottom="16dp">
+                android:hint="Your name" android:layout_marginBottom="12dp">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etProfileName"
                     android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:inputType="textPersonName|textCapWords"
-                    android:textColor="?android:textColorPrimary" android:maxLength="50"/>
+                    android:inputType="textPersonName|textCapWords" android:maxLength="50"
+                    android:textColor="?android:textColorPrimary"/>
             </com.google.android.material.textfield.TextInputLayout>
+
             <!-- About preset -->
             <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:text="About" android:textSize="12sp"
@@ -65,27 +87,30 @@
             <Spinner android:id="@+id/spinnerAbout"
                 android:layout_width="match_parent" android:layout_height="48dp"
                 android:layout_marginBottom="8dp"/>
+
             <!-- Custom about -->
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/OcOutlinedField"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:hint="Custom about text" android:layout_marginBottom="24dp">
+                android:hint="Custom about" android:layout_marginBottom="20dp">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etProfileAbout"
                     android:layout_width="match_parent" android:layout_height="wrap_content"
-                    android:inputType="textMultiLine" android:maxLines="3"
-                    android:textColor="?android:textColorPrimary" android:maxLength="100"
-                    android:enabled="false"/>
+                    android:inputType="textMultiLine" android:maxLines="3" android:maxLength="100"
+                    android:textColor="?android:textColorPrimary" android:enabled="false"/>
             </com.google.android.material.textfield.TextInputLayout>
+
             <ProgressBar android:id="@+id/profileProgress"
                 android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:visibility="gone" android:layout_marginBottom="8dp"/>
+                android:layout_gravity="center_horizontal" android:visibility="gone"
+                android:layout_marginBottom="8dp"/>
+
             <Button android:id="@+id/btnSaveProfile"
-                android:layout_width="match_parent" android:layout_height="56dp"
+                android:layout_width="match_parent" android:layout_height="52dp"
                 android:text="Save Profile"
                 android:background="@drawable/bg_btn_primary"
-                android:textColor="#FFFFFF" android:textSize="16sp"/>
+                android:textColor="#FFFFFF" android:textSize="16sp"
+                android:layout_marginBottom="24dp"/>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </LinearLayout>
