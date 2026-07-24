@@ -62,7 +62,9 @@ class PhoneActivity : AppCompatActivity() {
         })
 
         btnContinue.setOnClickListener {
-            val phone = "${selectedCountry.dialCode}${etPhone.text.toString().trim()}"
+            val raw = etPhone.text.toString().trim()
+            val stripped = if (raw.startsWith("0")) raw.drop(1) else raw
+            val phone = "${selectedCountry.dialCode}$stripped"
             vm.sendOtp(phone)
         }
 
@@ -70,7 +72,9 @@ class PhoneActivity : AppCompatActivity() {
             when (state) {
                 is AuthState.Loading -> btnContinue.isEnabled = false
                 is AuthState.OtpSent -> {
-                    val phone = "${selectedCountry.dialCode}${etPhone.text.toString().trim()}"
+                    val raw = etPhone.text.toString().trim()
+            val stripped = if (raw.startsWith("0")) raw.drop(1) else raw
+            val phone = "${selectedCountry.dialCode}$stripped"
                     startActivity(Intent(this, OtpActivity::class.java).apply {
                         putExtra("PHONE", phone)
                         putExtra("CODE", state.code)
