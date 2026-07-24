@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.meharenterprises.originconnect.data.model.Contact
 import com.meharenterprises.originconnect.data.remote.ApiService
 import com.meharenterprises.originconnect.data.remote.SendMessageRequest
+import com.meharenterprises.originconnect.data.remote.SyncContactsRequest
 import com.meharenterprises.originconnect.data.local.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,13 +35,35 @@ class ContactsViewModel @Inject constructor(
     private val _openChat = MutableStateFlow<OpenChatState>(OpenChatState.Idle)
     val openChat: StateFlow<OpenChatState> = _openChat.asStateFlow()
 
+    // Called with device phone numbers to sync, then load
+    fun syncAndLoad(devicePhones: List<String>) = viewModelScope.launch {
+        _contacts.value = ContactsUiState.Loading
+        try {
+            val auth = session.getAuthHeader()
+            // Sync device contacts with backend to discover registered users
+            if (devicePhones.isNotEmpty()) {
+                api.syncContacts(SyncContactsRequest(devicePhones), auth)
+            }
+            // Now get all registered contacts
+            val res = api.getContacts(auth)
+            val list = if (res.isSuccessful) res.body() ?: emptyList() else emptyList()
+            _contacts.value = ContactsUiState.Success(list, list)
+        } catch (e: Exception) {
+            _contacts.value = ContactsUiState.Err(e.message ?: "Network error")
+        }
+    }
+
+    // Also try loading without device contacts (for refresh)
     fun load() = viewModelScope.launch {
         _contacts.value = ContactsUiState.Loading
         try {
-            val r = api.getContacts(session.getAuthHeader())
-            val list = if (r.isSuccessful) r.body() ?: emptyList() else emptyList()
+            val auth = session.getAuthHeader()
+            val res = api.getContacts(auth)
+            val list = if (res.isSuccessful) res.body() ?: emptyList() else emptyList()
             _contacts.value = ContactsUiState.Success(list, list)
-        } catch (e: Exception) { _contacts.value = ContactsUiState.Err(e.message ?: "Network error") }
+        } catch (e: Exception) {
+            _contacts.value = ContactsUiState.Err(e.message ?: "Network error")
+        }
     }
 
     fun filter(q: String) {
@@ -57,7 +80,8 @@ class ContactsViewModel @Inject constructor(
             if (existing != null) { _openChat.value = OpenChatState.Ready(existing.id, userId); return@launch }
             api.sendMessage(SendMessageRequest(userId, "text", "👋"), auth)
             val conv = api.getConversations(auth).body()?.firstOrNull { it.otherUserId == userId }
-            _openChat.value = if (conv != null) OpenChatState.Ready(conv.id, userId) else OpenChatState.Err("Could not open chat")
+            _openChat.value = if (conv != null) OpenChatState.Ready(conv.id, userId)
+                else OpenChatState.Err("Could not open chat")
         } catch (e: Exception) { _openChat.value = OpenChatState.Err(e.message ?: "Error") }
     }
 

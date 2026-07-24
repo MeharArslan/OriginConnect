@@ -1,13 +1,19 @@
 package com.meharenterprises.originconnect.ui.main
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.provider.ContactsContract
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.MenuItem
 import android.view.View
 import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,6 +28,10 @@ import kotlinx.coroutines.launch
 class ContactsActivity : AppCompatActivity() {
     private val vm: ContactsViewModel by viewModels()
 
+    private val requestPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        if (granted) readContactsAndSync() else vm.load() // try without device contacts
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, true)
@@ -33,10 +43,10 @@ class ContactsActivity : AppCompatActivity() {
         supportActionBar?.title = "Select contact"
         tb.setNavigationOnClickListener { finish() }
 
-        val recycler   = findViewById<RecyclerView>(R.id.recyclerContacts)
-        val etSearch   = findViewById<EditText>(R.id.etContactSearch)
-        val progress   = findViewById<ProgressBar>(R.id.contactsProgress)
-        val tvEmpty    = findViewById<TextView>(R.id.tvContactsEmpty)
+        val recycler = findViewById<RecyclerView>(R.id.recyclerContacts)
+        val etSearch = findViewById<EditText>(R.id.etContactSearch)
+        val progress = findViewById<ProgressBar>(R.id.contactsProgress)
+        val tvEmpty  = findViewById<TextView>(R.id.tvContactsEmpty)
 
         val adapter = ContactsAdapter { contact -> vm.openConversation(contact.user.id) }
         recycler.layoutManager = LinearLayoutManager(this)
@@ -51,36 +61,103 @@ class ContactsActivity : AppCompatActivity() {
         lifecycleScope.launch {
             vm.contacts.collectLatest { state ->
                 when (state) {
-                    is ContactsUiState.Loading -> { progress.visibility = View.VISIBLE; recycler.visibility = View.GONE; tvEmpty.visibility = View.GONE }
+                    is ContactsUiState.Loading -> {
+                        progress.visibility = View.VISIBLE
+                        recycler.visibility = View.GONE
+                        tvEmpty.visibility = View.GONE
+                    }
                     is ContactsUiState.Success -> {
                         progress.visibility = View.GONE
                         if (state.filtered.isEmpty()) {
-                            recycler.visibility = View.GONE; tvEmpty.visibility = View.VISIBLE
-                            tvEmpty.text = if (state.all.isEmpty()) "No contacts on OriginConnect yet. Share your number with friends." else "No results."
-                        } else { tvEmpty.visibility = View.GONE; recycler.visibility = View.VISIBLE; adapter.submitList(state.filtered) }
+                            recycler.visibility = View.GONE
+                            tvEmpty.visibility = View.VISIBLE
+                            tvEmpty.text = if (state.all.isEmpty())
+                                "No OriginConnect users found in your contacts.
+Share OriginConnect with friends to get started."
+                            else "No contacts match your search."
+                        } else {
+                            tvEmpty.visibility = View.GONE
+                            recycler.visibility = View.VISIBLE
+                            adapter.submitList(state.filtered)
+                        }
                     }
-                    is ContactsUiState.Err -> { progress.visibility = View.GONE; tvEmpty.visibility = View.VISIBLE; tvEmpty.text = state.msg }
+                    is ContactsUiState.Err -> {
+                        progress.visibility = View.GONE
+                        tvEmpty.visibility = View.VISIBLE
+                        tvEmpty.text = "Error: ${state.msg}
+
+Tap to retry"
+                        tvEmpty.setOnClickListener { requestContactsPermission() }
+                    }
                 }
             }
         }
 
         lifecycleScope.launch {
-            vm.openChat.collectLatest { s ->
-                when (s) {
+            vm.openChat.collectLatest { state ->
+                when (state) {
                     is OpenChatState.Loading -> progress.visibility = View.VISIBLE
-                    is OpenChatState.Ready -> {
+                    is OpenChatState.Ready   -> {
                         progress.visibility = View.GONE
                         startActivity(Intent(this@ContactsActivity, ChatActivity::class.java).apply {
-                            putExtra("CONVERSATION_ID", s.conversationId)
-                            putExtra("OTHER_USER_ID", s.otherUserId)
+                            putExtra("CONVERSATION_ID", state.conversationId)
+                            putExtra("OTHER_USER_ID", state.otherUserId)
                         })
-                        vm.resetOpenChat(); finish()
+                        vm.resetOpenChat()
+                        finish()
                     }
-                    is OpenChatState.Err -> { progress.visibility = View.GONE; Toast.makeText(this@ContactsActivity, s.msg, Toast.LENGTH_SHORT).show(); vm.resetOpenChat() }
+                    is OpenChatState.Err -> {
+                        progress.visibility = View.GONE
+                        Toast.makeText(this@ContactsActivity, state.msg, Toast.LENGTH_SHORT).show()
+                        vm.resetOpenChat()
+                    }
                     else -> progress.visibility = View.GONE
                 }
             }
         }
-        vm.load()
+
+        requestContactsPermission()
+    }
+
+    private fun requestContactsPermission() {
+        when {
+            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS)
+                == PackageManager.PERMISSION_GRANTED -> readContactsAndSync()
+            else -> requestPermission.launch(Manifest.permission.READ_CONTACTS)
+        }
+    }
+
+    private fun readContactsAndSync() {
+        val phones = mutableListOf<String>()
+        try {
+            val cursor = contentResolver.query(
+                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                arrayOf(ContactsContract.CommonDataKinds.Phone.NUMBER),
+                null, null, null
+            )
+            cursor?.use {
+                val col = it.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
+                while (it.moveToNext()) {
+                    val raw = it.getString(col)?.trim() ?: continue
+                    // Normalize: remove spaces/dashes, ensure starts with +
+                    val normalized = raw.replace("[\s\-().]".toRegex(), "")
+                    if (normalized.isNotEmpty()) phones.add(normalized)
+                }
+            }
+        } catch (_: Exception) {}
+
+        // Also add without country code variants for Pakistan (+92 → 0)
+        val allPhones = phones.toMutableSet()
+        phones.forEach { p ->
+            if (p.startsWith("+92") && p.length > 3) allPhones.add("0" + p.drop(3))
+            if (p.startsWith("0") && p.length > 1) allPhones.add("+92" + p.drop(1))
+        }
+
+        vm.syncAndLoad(allPhones.toList())
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) { finish(); return true }
+        return super.onOptionsItemSelected(item)
     }
 }
