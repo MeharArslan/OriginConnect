@@ -12,6 +12,8 @@ data class SendMessageRequest(val receiverId: String, val type: String, val cont
 data class SyncContactsRequest(val phones: List<String>)
 data class UpdateProfileRequest(val displayName: String? = null, val about: String? = null)
 data class ReactRequest(val emoji: String)
+data class MediaResponse(val id: String = "", val url: String = "", val thumbnailUrl: String? = null)
+data class UpdatePhotoRequest(val photoUrl: String)
 
 interface ApiService {
     @POST("auth/send-otp") suspend fun sendOtp(@Body req: SendOtpRequest): Response<SendOtpResponse>
@@ -30,5 +32,6 @@ interface ApiService {
     @DELETE("messages/{id}") suspend fun deleteMessage(@Path("id") id: String, @Query("forEveryone") forEveryone: Boolean, @Header("Authorization") token: String): Response<Any>
     @POST("messages/{id}/react") suspend fun reactMessage(@Path("id") id: String, @Body req: ReactRequest, @Header("Authorization") token: String): Response<Any>
     @POST("messages/{id}/star") suspend fun starMessage(@Path("id") id: String, @Body body: Map<String, Boolean>, @Header("Authorization") token: String): Response<Any>
-    @Multipart @POST("media/upload") suspend fun uploadMedia(@Part file: okhttp3.MultipartBody.Part, @Header("Authorization") token: String): Response<Any>
+    @Multipart @POST("media/upload") suspend fun uploadMedia(@Part file: okhttp3.MultipartBody.Part, @Header("Authorization") token: String): Response<MediaResponse>
+    @PUT("users/photo") suspend fun updatePhoto(@Body req: UpdatePhotoRequest, @Header("Authorization") token: String): Response<Any>
 }
