@@ -137,7 +137,7 @@ class ContactsActivity : AppCompatActivity() {
                 while (it.moveToNext()) {
                     val raw = it.getString(col)?.trim() ?: continue
                     // Normalize: remove spaces/dashes, ensure starts with +
-                    val normalized = raw.replace("[\s\-().]".toRegex(), "")
+                    val normalized = raw.replace(Regex("[\\s\\-().]"), "")
                     if (normalized.isNotEmpty()) phones.add(normalized)
                 }
             }
