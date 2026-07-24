@@ -38,6 +38,8 @@ class ContactNameCache @Inject constructor(
         } catch (_: Exception) {}
     }
 
+    fun putPhone(phone: String, name: String) = storeAllVariants(phone, name)
+
     fun forceReload() { loaded = false; loadDeviceContacts() }
 
     private fun storeAllVariants(raw: String, name: String) {

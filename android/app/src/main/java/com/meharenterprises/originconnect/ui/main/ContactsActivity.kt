@@ -144,14 +144,14 @@ class ContactsActivity : AppCompatActivity() {
                     val digits = raw.filter { c -> c.isDigit() || c == '+' }
                     if (digits.length >= 7) {
                         // Populate name cache for all phone variants
-                        nameCache.putPhone(digits, name)
+                        nameCache.storePhone(digits, name)
                         val e164 = when {
                             digits.startsWith("+92") -> digits
                             digits.startsWith("0") && digits.length >= 10 -> "+92" + digits.drop(1)
                             digits.length == 10 -> "+92$digits"
                             else -> digits
                         }
-                        nameCache.putPhone(e164, name)
+                        nameCache.storePhone(e164, name)
                         phones.add(e164)
                         phones.add(digits)
                     }
