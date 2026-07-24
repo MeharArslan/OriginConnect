@@ -53,8 +53,7 @@ class ContactsActivity : AppCompatActivity() {
                         progress.visibility = View.GONE
                         if (state.filtered.isEmpty()) {
                             recycler.visibility = View.GONE; tvEmpty.visibility = View.VISIBLE
-                            tvEmpty.text = if (state.contacts.isEmpty()) "No contacts on OriginConnect yet.
-Invite friends to get started." else "No contacts match your search."
+                            tvEmpty.text = if (state.contacts.isEmpty()) "No contacts on OriginConnect yet.\nInvite friends to get started." else "No contacts match your search."
                         } else { recycler.visibility = View.VISIBLE; tvEmpty.visibility = View.GONE; adapter.submitList(state.filtered) }
                     }
                     is ContactsState.Error -> { progress.visibility = View.GONE; tvEmpty.visibility = View.VISIBLE; tvEmpty.text = state.message }
