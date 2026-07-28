@@ -9,9 +9,6 @@
     <fragment android:id="@+id/updatesFragment"
         android:name="com.meharenterprises.originconnect.ui.updates.UpdatesFragment"
         android:label="Updates"/>
-    <fragment android:id="@+id/communitiesFragment"
-        android:name="com.meharenterprises.originconnect.ui.communities.CommunitiesFragment"
-        android:label="Communities"/>
     <fragment android:id="@+id/callsFragment"
         android:name="com.meharenterprises.originconnect.ui.calls.CallsFragment"
         android:label="Calls"/>
