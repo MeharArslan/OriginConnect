@@ -98,7 +98,6 @@ class MainActivity : AppCompatActivity() {
             supportActionBar?.title = when (dest.id) {
                 R.id.chatsFragment       -> "OriginConnect"
                 R.id.updatesFragment     -> "Updates"
-                R.id.communitiesFragment -> "Communities"
                 R.id.callsFragment       -> "Calls"
                 else -> "OriginConnect"
             }
