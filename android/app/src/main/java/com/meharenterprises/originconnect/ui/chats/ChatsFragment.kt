@@ -48,7 +48,10 @@ class ChatsFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             vm.state.collectLatest { s ->
-                adapter.submitList(s.filtered)
+                adapter.submitList(s.filtered) {
+                    // Force rebind so names from nameCache render after cache is warmed
+                    adapter.notifyItemRangeChanged(0, adapter.itemCount)
+                }
                 swipe.isRefreshing = s.isLoading
                 val showEmpty = !s.isLoading && s.filtered.isEmpty()
                 empty.visibility    = if (showEmpty) View.VISIBLE else View.GONE

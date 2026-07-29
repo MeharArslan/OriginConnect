@@ -56,6 +56,7 @@ class ChatsViewModel @Inject constructor(
     fun load() = viewModelScope.launch {
         _state.value = _state.value.copy(isLoading = true)
         try {
+            nameCache.loadDeviceContacts()
             val auth = session.getAuthHeader()
             val contacts = api.getContacts(auth).body() ?: emptyList()
             contacts.forEach { c ->
