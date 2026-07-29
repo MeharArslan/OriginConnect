@@ -16,8 +16,12 @@ class ChatRepository @Inject constructor(
     }
 
     suspend fun getMessages(conversationId: String, before: String? = null): List<Message> {
-        val res = api.getMessages(conversationId, session.getAuthHeader(), before)
-        return if (res.isSuccessful) res.body() ?: emptyList() else emptyList()
+        return try {
+            val res = api.getMessages(conversationId, session.getAuthHeader(), before)
+            if (res.isSuccessful) res.body() ?: emptyList() else emptyList()
+        } catch (_: Exception) {
+            emptyList()
+        }
     }
 
     suspend fun sendMessage(receiverId: String, content: String, type: String = "text", mediaUrl: String? = null, replyToId: String? = null): Message? {
