@@ -49,15 +49,23 @@ class MainActivity : AppCompatActivity() {
         ActivityResultContracts.TakePicturePreview()
     ) { /* photo taken from toolbar camera */ }
 
+    private val contactsPermission = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) nameCache.loadDeviceContacts()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, true)
         setContentView(R.layout.activity_main)
 
-        // Load device contacts into cache immediately on startup
+        // Load device contacts — request permission if not yet granted
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS)
             == PackageManager.PERMISSION_GRANTED) {
             nameCache.loadDeviceContacts()
+        } else {
+            contactsPermission.launch(Manifest.permission.READ_CONTACTS)
         }
 
         val toolbar = findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.toolbar)
