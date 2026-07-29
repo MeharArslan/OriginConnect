@@ -38,6 +38,16 @@ class ContactNameCache @Inject constructor(
 
     fun forceReload() { loaded = false; loadDeviceContacts() }
 
+    fun preloadFromRoom(entities: List<OcContactEntity>) {
+        entities.forEach { e ->
+            userIdToPhone[e.userId] = e.phone
+            userIdToPhoto[e.userId] = e.photoUrl
+            val best = e.localName?.takeIf { it.isNotEmpty() } ?: e.serverName
+            userIdToName[e.userId] = best
+            if (best.isNotEmpty()) storeVariants(e.phone, best)
+        }
+    }
+
     fun putPhone(phone: String, name: String) = storeVariants(phone, name)
 
     private fun storeVariants(raw: String, name: String) {
