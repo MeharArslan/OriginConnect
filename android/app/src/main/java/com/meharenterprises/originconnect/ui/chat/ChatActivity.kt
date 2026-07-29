@@ -30,6 +30,7 @@ class ChatActivity : AppCompatActivity() {
 
         val convId  = intent.getStringExtra("CONVERSATION_ID") ?: ""
         val otherId = intent.getStringExtra("OTHER_USER_ID") ?: ""
+        nameCache.loadDeviceContacts()
         val displayName = nameCache.resolveUserId(otherId) ?: ""
         val photoUrl    = nameCache.getPhotoUrl(otherId)
 
