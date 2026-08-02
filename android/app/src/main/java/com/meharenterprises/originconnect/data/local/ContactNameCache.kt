@@ -82,17 +82,24 @@ class ContactNameCache @Inject constructor(
     fun putUserId(userId: String, phone: String, fallback: String, photoUrl: String? = null) {
         userIdToPhone[userId] = phone
         userIdToPhoto[userId] = photoUrl
+        // Always try device name first; fall back to server name
         val localName = resolvePhone(phone)
-        userIdToName[userId] = localName ?: fallback
+        userIdToName[userId] = if (!localName.isNullOrEmpty()) localName else fallback
     }
 
     fun resolveUserId(userId: String): String? {
         val phone = userIdToPhone[userId]
         if (phone != null) {
+            // Re-check device contacts every time — they may have loaded after putUserId was called
+            ensureLoaded()
             val local = resolvePhone(phone)
-            if (local != null) { userIdToName[userId] = local; return local }
+            if (!local.isNullOrEmpty()) {
+                userIdToName[userId] = local
+                return local
+            }
         }
-        return userIdToName[userId]
+        // Return cached name (could be server name if device name not found)
+        return userIdToName[userId]?.takeIf { it.isNotEmpty() }
     }
 
     fun getPhotoUrl(userId: String): String? = userIdToPhoto[userId]
