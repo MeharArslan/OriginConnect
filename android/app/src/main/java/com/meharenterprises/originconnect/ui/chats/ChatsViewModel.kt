@@ -40,6 +40,8 @@ class ChatsViewModel @Inject constructor(
     init {
         socketManager.onNewMessage = { load() }
         viewModelScope.launch {
+            // Load device contacts FIRST so names are ready before UI renders
+            nameCache.loadDeviceContacts()
             val cachedContacts = contactDao.getAll()
             if (cachedContacts.isNotEmpty()) nameCache.preloadFromRoom(cachedContacts)
             val cached = conversationDao.getAll().map { it.toConversation() }
@@ -56,7 +58,7 @@ class ChatsViewModel @Inject constructor(
     fun load() = viewModelScope.launch {
         _state.value = _state.value.copy(isLoading = true)
         try {
-            nameCache.loadDeviceContacts()
+            nameCache.ensureLoaded()
             val auth = session.getAuthHeader()
             val contacts = api.getContacts(auth).body() ?: emptyList()
             contacts.forEach { c ->

@@ -38,6 +38,11 @@ class ContactNameCache @Inject constructor(
 
     fun forceReload() { loaded = false; loadDeviceContacts() }
 
+    /** Called on every load() — reloads if process was killed and restarted */
+    fun ensureLoaded() {
+        if (!loaded) loadDeviceContacts()
+    }
+
     fun preloadFromRoom(entities: List<OcContactEntity>) {
         entities.forEach { e ->
             userIdToPhone[e.userId] = e.phone
