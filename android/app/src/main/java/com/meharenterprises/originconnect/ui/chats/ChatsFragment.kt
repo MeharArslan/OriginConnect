@@ -68,4 +68,14 @@ class ChatsFragment : Fragment() {
     override fun onResume() { super.onResume(); vm.load() }
     override fun onDestroyView() { super.onDestroyView(); _adapter = null }
     fun search(q: String) = vm.search(q)
+    fun refreshNames() {
+        // Force adapter rebind with fresh device contact names after permission granted
+        _adapter?.notifyDataSetChanged()
+        vm.load()
+    }
+    fun refreshNames() {
+        // Force adapter rebind with fresh device contact names after permission granted
+        _adapter?.notifyDataSetChanged()
+        vm.load()
+    }
 }

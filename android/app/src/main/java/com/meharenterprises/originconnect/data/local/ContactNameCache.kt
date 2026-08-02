@@ -17,13 +17,13 @@ class ContactNameCache @Inject constructor(
 
     fun loadDeviceContacts() {
         if (loaded) return
-        loaded = true
         try {
             val cur = context.contentResolver.query(
                 ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
                 arrayOf(ContactsContract.CommonDataKinds.Phone.NUMBER,
                     ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME),
-                null, null, null) ?: return
+                null, null, null) ?: return  // permission denied — do NOT set loaded=true
+            var count = 0
             cur.use {
                 val numCol  = it.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
                 val nameCol = it.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)
@@ -31,8 +31,10 @@ class ContactNameCache @Inject constructor(
                     val raw  = it.getString(numCol)?.trim() ?: continue
                     val name = it.getString(nameCol)?.trim()?.takeIf { n -> n.isNotEmpty() } ?: continue
                     storeVariants(raw, name)
+                    count++
                 }
             }
+            if (count > 0) loaded = true  // only mark loaded if we actually got contacts
         } catch (_: Exception) {}
     }
 

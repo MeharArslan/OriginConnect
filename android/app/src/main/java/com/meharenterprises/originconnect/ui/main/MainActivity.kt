@@ -52,7 +52,15 @@ class MainActivity : AppCompatActivity() {
     private val contactsPermission = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
-        if (granted) nameCache.loadDeviceContacts()
+        if (granted) {
+            nameCache.forceReload()
+            // Re-trigger load so chat list rebinds with device contact names
+            val navHost = supportFragmentManager.findFragmentById(R.id.navHostFragment)
+            val chats = navHost?.childFragmentManager?.fragments?.firstOrNull()
+            if (chats is com.meharenterprises.originconnect.ui.chats.ChatsFragment) {
+                chats.refreshNames()
+            }
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
