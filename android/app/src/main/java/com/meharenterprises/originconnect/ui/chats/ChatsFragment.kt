@@ -62,10 +62,15 @@ class ChatsFragment : Fragment() {
             val token = session.getAccessToken() ?: return@launch
             vm.connectSocket(token)
         }
-        vm.load()
     }
 
-    override fun onResume() { super.onResume(); vm.load() }
+    override fun onResume() {
+        super.onResume()
+        viewLifecycleOwner.lifecycleScope.launch {
+            val token = session.getAccessToken() ?: return@launch
+            vm.connectSocket(token)
+        }
+    }
     override fun onDestroyView() { super.onDestroyView(); _adapter = null }
     fun search(q: String) = vm.search(q)
     fun refreshNames() {
