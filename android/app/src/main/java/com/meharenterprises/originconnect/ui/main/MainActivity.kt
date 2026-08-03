@@ -55,13 +55,13 @@ class MainActivity : AppCompatActivity() {
         if (granted) {
             nameCache.forceReload()
             // Use postDelayed to ensure fragment is fully ready after permission dialog closes
-            android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+            android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(Runnable {
                 val navHost = supportFragmentManager.findFragmentById(R.id.navHostFragment)
                 val frag = navHost?.childFragmentManager?.primaryNavigationFragment
                 if (frag is com.meharenterprises.originconnect.ui.chats.ChatsFragment) {
                     frag.refreshNames()
                 }
-            }, 300)
+            }, 300L)
         }
     }
 
