@@ -39,19 +39,23 @@ class ChatsViewModel @Inject constructor(
 
     init {
         socketManager.onNewMessage = { load() }
+        // Show loading immediately so UI never shows empty state while Room loads
+        _state.value = _state.value.copy(isLoading = true)
         viewModelScope.launch {
             // 1. Load device contacts so names resolve correctly
             nameCache.loadDeviceContacts()
-            // 2. Preload name/photo cache from Room so names show before API returns
+            // 2. Preload name/photo cache from Room
             val cachedContacts = contactDao.getAll()
             if (cachedContacts.isNotEmpty()) nameCache.preloadFromRoom(cachedContacts)
-            // 3. Show cached conversations immediately (prevents blank screen on restart)
+            // 3. Show cached conversations — always emit even if empty
             val cached = conversationDao.getAll().map { it.toConversation() }
             _state.value = _state.value.copy(
                 conversations = cached,
                 filtered = applyFilter(cached, ""),
-                isLoading = true  // still loading fresh data from API
+                isLoading = true  // still fetching fresh data from API
             )
+            // 4. Fetch fresh data from network
+            load()
         }
     }
 
