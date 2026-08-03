@@ -54,12 +54,14 @@ class MainActivity : AppCompatActivity() {
     ) { granted ->
         if (granted) {
             nameCache.forceReload()
-            // Re-trigger load so chat list rebinds with device contact names
-            val navHost = supportFragmentManager.findFragmentById(R.id.navHostFragment)
-            val chats = navHost?.childFragmentManager?.fragments?.firstOrNull()
-            if (chats is com.meharenterprises.originconnect.ui.chats.ChatsFragment) {
-                chats.refreshNames()
-            }
+            // Use postDelayed to ensure fragment is fully ready after permission dialog closes
+            android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                val navHost = supportFragmentManager.findFragmentById(R.id.navHostFragment)
+                val frag = navHost?.childFragmentManager?.primaryNavigationFragment
+                if (frag is com.meharenterprises.originconnect.ui.chats.ChatsFragment) {
+                    frag.refreshNames()
+                }
+            }, 300)
         }
     }
 
