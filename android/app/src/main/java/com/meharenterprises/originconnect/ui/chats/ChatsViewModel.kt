@@ -75,12 +75,22 @@ class ChatsViewModel @Inject constructor(
                 })
             }
             val list = api.getConversations(auth).body() ?: emptyList()
-            conversationDao.upsertAll(list.map { it.toEntity() })
-            _state.value = _state.value.copy(
-                conversations = list,
-                filtered = applyFilter(list, _state.value.query),
-                isLoading = false
-            )
+            if (list.isNotEmpty()) {
+                conversationDao.upsertAll(list.map { it.toEntity() })
+                _state.value = _state.value.copy(
+                    conversations = list,
+                    filtered = applyFilter(list, _state.value.query),
+                    isLoading = false
+                )
+            } else {
+                // API returned empty — always prefer Room cache over blank screen
+                val cached = conversationDao.getAll().map { it.toConversation() }
+                _state.value = _state.value.copy(
+                    conversations = cached,
+                    filtered = applyFilter(cached, _state.value.query),
+                    isLoading = false
+                )
+            }
         } catch (_: Exception) {
             val fallback = conversationDao.getAll().map { it.toConversation() }
             _state.value = _state.value.copy(
