@@ -5,6 +5,7 @@ import com.meharenterprises.originconnect.data.model.Contact
 import com.meharenterprises.originconnect.data.remote.ApiService
 import com.meharenterprises.originconnect.data.remote.SendMessageRequest
 import com.meharenterprises.originconnect.data.remote.SyncContactsRequest
+import com.meharenterprises.originconnect.data.local.OcContactDao
 import com.meharenterprises.originconnect.data.local.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +29,8 @@ sealed class OpenChatState {
 @HiltViewModel
 class ContactsViewModel @Inject constructor(
     private val api: ApiService,
-    private val session: SessionManager
+    private val session: SessionManager,
+    private val contactDao: OcContactDao
 ) : ViewModel() {
     private val _contacts = MutableStateFlow<ContactsUiState>(ContactsUiState.Loading)
     val contacts: StateFlow<ContactsUiState> = _contacts.asStateFlow()
@@ -38,31 +40,52 @@ class ContactsViewModel @Inject constructor(
     // Called with device phone numbers to sync, then load
     fun syncAndLoad(devicePhones: List<String>) = viewModelScope.launch {
         _contacts.value = ContactsUiState.Loading
+        // Show Room cache immediately while network loads
+        val cached = contactDao.getAll()
+        if (cached.isNotEmpty()) {
+            val models = cached.map { e ->
+                Contact(com.meharenterprises.originconnect.data.model.User(
+                    e.userId, e.phone, e.localName ?: e.serverName, e.photoUrl, e.about
+                ))
+            }
+            _contacts.value = ContactsUiState.Success(models, models)
+        }
         try {
             val auth = session.getAuthHeader()
-            // Sync device contacts with backend to discover registered users
             if (devicePhones.isNotEmpty()) {
                 api.syncContacts(SyncContactsRequest(devicePhones), auth)
             }
-            // Now get all registered contacts
             val res = api.getContacts(auth)
             val list = if (res.isSuccessful) res.body() ?: emptyList() else emptyList()
-            _contacts.value = ContactsUiState.Success(list, list)
+            if (list.isNotEmpty()) {
+                _contacts.value = ContactsUiState.Success(list, list)
+            } else if (cached.isEmpty()) {
+                _contacts.value = ContactsUiState.Success(emptyList(), emptyList())
+            }
         } catch (e: Exception) {
-            _contacts.value = ContactsUiState.Err(e.message ?: "Network error")
+            if (cached.isEmpty()) _contacts.value = ContactsUiState.Err(e.message ?: "Network error")
         }
     }
 
-    // Also try loading without device contacts (for refresh)
     fun load() = viewModelScope.launch {
         _contacts.value = ContactsUiState.Loading
+        val cached = contactDao.getAll()
+        if (cached.isNotEmpty()) {
+            val models = cached.map { e ->
+                Contact(com.meharenterprises.originconnect.data.model.User(
+                    e.userId, e.phone, e.localName ?: e.serverName, e.photoUrl, e.about
+                ))
+            }
+            _contacts.value = ContactsUiState.Success(models, models)
+        }
         try {
             val auth = session.getAuthHeader()
             val res = api.getContacts(auth)
             val list = if (res.isSuccessful) res.body() ?: emptyList() else emptyList()
-            _contacts.value = ContactsUiState.Success(list, list)
+            if (list.isNotEmpty()) _contacts.value = ContactsUiState.Success(list, list)
+            else if (cached.isEmpty()) _contacts.value = ContactsUiState.Success(emptyList(), emptyList())
         } catch (e: Exception) {
-            _contacts.value = ContactsUiState.Err(e.message ?: "Network error")
+            if (cached.isEmpty()) _contacts.value = ContactsUiState.Err(e.message ?: "Network error")
         }
     }
 
