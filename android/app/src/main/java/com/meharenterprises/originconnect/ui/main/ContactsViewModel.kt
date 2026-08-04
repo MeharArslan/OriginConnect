@@ -44,8 +44,9 @@ class ContactsViewModel @Inject constructor(
         val cached = contactDao.getAll()
         if (cached.isNotEmpty()) {
             val models = cached.map { e ->
-                Contact(com.meharenterprises.originconnect.data.model.User(
-                    e.userId, e.phone, e.localName ?: e.serverName, e.photoUrl, e.about
+                Contact(user = com.meharenterprises.originconnect.data.model.User(
+                    id = e.userId, phone = e.phone, displayName = e.localName ?: e.serverName,
+                    photoUrl = e.photoUrl, about = e.about
                 ))
             }
             _contacts.value = ContactsUiState.Success(models, models)
@@ -72,8 +73,9 @@ class ContactsViewModel @Inject constructor(
         val cached = contactDao.getAll()
         if (cached.isNotEmpty()) {
             val models = cached.map { e ->
-                Contact(com.meharenterprises.originconnect.data.model.User(
-                    e.userId, e.phone, e.localName ?: e.serverName, e.photoUrl, e.about
+                Contact(user = com.meharenterprises.originconnect.data.model.User(
+                    id = e.userId, phone = e.phone, displayName = e.localName ?: e.serverName,
+                    photoUrl = e.photoUrl, about = e.about
                 ))
             }
             _contacts.value = ContactsUiState.Success(models, models)
