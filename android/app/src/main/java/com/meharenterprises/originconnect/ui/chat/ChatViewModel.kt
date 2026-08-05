@@ -1,5 +1,6 @@
 package com.meharenterprises.originconnect.ui.chat
 import androidx.lifecycle.*
+import com.meharenterprises.originconnect.data.local.OcMessageDao
 import com.meharenterprises.originconnect.data.model.Message
 import com.meharenterprises.originconnect.data.repository.ChatRepository
 import com.meharenterprises.originconnect.data.socket.SocketManager
@@ -10,6 +11,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ChatViewModel @Inject constructor(
     private val chatRepo: ChatRepository,
+    private val messageDao: OcMessageDao,
     private val socketManager: SocketManager
 ) : ViewModel() {
 
@@ -46,7 +48,24 @@ class ChatViewModel @Inject constructor(
 
     fun loadMessages() {
         viewModelScope.launch {
-            _messages.value = chatRepo.getMessages(conversationId)
+            // Show cached messages immediately
+            val cached = messageDao.getByConversation(conversationId)
+            if (cached.isNotEmpty()) {
+                _messages.postValue(cached.map { e ->
+                    com.meharenterprises.originconnect.data.model.Message(
+                        id = e.id, conversationId = e.conversationId,
+                        senderId = e.senderId, receiverId = e.receiverId,
+                        type = e.type, content = e.content, mediaUrl = e.mediaUrl,
+                        mediaThumbnail = e.mediaThumbnail, replyToId = e.replyToId,
+                        status = e.status, isDeleted = e.isDeleted,
+                        isDeletedForEveryone = e.isDeletedForEveryone,
+                        isStarred = e.isStarred, createdAt = e.createdAt
+                    )
+                })
+            }
+            // Then fetch fresh from network (updates cache via ChatRepository)
+            val fresh = chatRepo.getMessages(conversationId)
+            if (fresh.isNotEmpty()) _messages.postValue(fresh)
             chatRepo.markRead(conversationId)
         }
     }

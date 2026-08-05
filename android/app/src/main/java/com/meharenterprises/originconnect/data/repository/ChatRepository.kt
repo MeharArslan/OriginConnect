@@ -1,5 +1,9 @@
 package com.meharenterprises.originconnect.data.repository
+import com.meharenterprises.originconnect.data.local.OcMessageDao
+import com.meharenterprises.originconnect.data.local.OcMessageEntity
 import com.meharenterprises.originconnect.data.local.SessionManager
+import com.meharenterprises.originconnect.data.model.Message
+import com.meharenterprises.originconnect.data.model.Message
 import com.meharenterprises.originconnect.data.model.*
 import com.meharenterprises.originconnect.data.remote.*
 import javax.inject.Inject
@@ -8,7 +12,8 @@ import javax.inject.Singleton
 @Singleton
 class ChatRepository @Inject constructor(
     private val api: ApiService,
-    private val session: SessionManager
+    private val session: SessionManager,
+    private val messageDao: OcMessageDao
 ) {
     suspend fun getConversations(): List<Conversation> {
         val res = api.getConversations(session.getAuthHeader())
@@ -18,9 +23,13 @@ class ChatRepository @Inject constructor(
     suspend fun getMessages(conversationId: String, before: String? = null): List<Message> {
         return try {
             val res = api.getMessages(conversationId, session.getAuthHeader(), before)
-            if (res.isSuccessful) res.body() ?: emptyList() else emptyList()
+            val list = if (res.isSuccessful) res.body() ?: emptyList() else emptyList()
+            if (list.isNotEmpty()) {
+                messageDao.upsertAll(list.map { it.toEntity() })
+            }
+            if (list.isNotEmpty()) list else messageDao.getByConversation(conversationId).map { it.toMessage() }
         } catch (_: Exception) {
-            emptyList()
+            messageDao.getByConversation(conversationId).map { it.toMessage() }
         }
     }
 
@@ -57,3 +66,39 @@ class ChatRepository @Inject constructor(
 
     suspend fun getMyId() = session.getUserId() ?: ""
 }
+
+private fun Message.toEntity() = OcMessageEntity(
+    id = id, conversationId = conversationId, senderId = senderId,
+    receiverId = receiverId, type = type, content = content,
+    mediaUrl = mediaUrl, mediaThumbnail = mediaThumbnail,
+    replyToId = replyToId, status = status, isDeleted = isDeleted,
+    isDeletedForEveryone = isDeletedForEveryone, isStarred = isStarred,
+    createdAt = createdAt
+)
+
+private fun OcMessageEntity.toMessage() = Message(
+    id = id, conversationId = conversationId, senderId = senderId,
+    receiverId = receiverId, type = type, content = content,
+    mediaUrl = mediaUrl, mediaThumbnail = mediaThumbnail,
+    replyToId = replyToId, status = status, isDeleted = isDeleted,
+    isDeletedForEveryone = isDeletedForEveryone, isStarred = isStarred,
+    createdAt = createdAt
+)
+
+private fun Message.toEntity() = OcMessageEntity(
+    id = id, conversationId = conversationId, senderId = senderId,
+    receiverId = receiverId, type = type, content = content,
+    mediaUrl = mediaUrl, mediaThumbnail = mediaThumbnail,
+    replyToId = replyToId, status = status, isDeleted = isDeleted,
+    isDeletedForEveryone = isDeletedForEveryone, isStarred = isStarred,
+    createdAt = createdAt
+)
+
+private fun OcMessageEntity.toMessage() = Message(
+    id = id, conversationId = conversationId, senderId = senderId,
+    receiverId = receiverId, type = type, content = content,
+    mediaUrl = mediaUrl, mediaThumbnail = mediaThumbnail,
+    replyToId = replyToId, status = status, isDeleted = isDeleted,
+    isDeletedForEveryone = isDeletedForEveryone, isStarred = isStarred,
+    createdAt = createdAt
+)

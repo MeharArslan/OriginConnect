@@ -5,6 +5,7 @@ import com.meharenterprises.originconnect.BuildConfig
 import com.meharenterprises.originconnect.data.local.OcContactDao
 import com.meharenterprises.originconnect.data.local.OcConversationDao
 import com.meharenterprises.originconnect.data.local.OcDatabase
+import com.meharenterprises.originconnect.data.local.OcMessageDao
 import com.meharenterprises.originconnect.data.local.SessionManager
 import com.meharenterprises.originconnect.data.remote.ApiService
 import com.meharenterprises.originconnect.data.remote.AuthInterceptor
@@ -36,6 +37,9 @@ object NetworkModule {
 
     @Provides @Singleton
     fun provideContactDao(db: OcDatabase): OcContactDao = db.contactDao()
+
+    @Provides @Singleton
+    fun provideMessageDao(db: OcDatabase): OcMessageDao = db.messageDao()
 
     @Provides @Singleton
     fun provideOkHttp(

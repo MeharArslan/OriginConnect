@@ -21,3 +21,13 @@ interface OcContactDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertAll(items: List<OcContactEntity>)
 }
+
+@Dao
+interface OcMessageDao {
+    @Query("SELECT * FROM oc_messages WHERE conversationId = :convId ORDER BY createdAt ASC")
+    suspend fun getByConversation(convId: String): List<OcMessageEntity>
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertAll(items: List<OcMessageEntity>)
+    @Query("DELETE FROM oc_messages WHERE conversationId = :convId")
+    suspend fun deleteByConversation(convId: String)
+}
