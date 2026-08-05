@@ -5,7 +5,10 @@ import com.meharenterprises.originconnect.BuildConfig
 import com.meharenterprises.originconnect.data.local.OcContactDao
 import com.meharenterprises.originconnect.data.local.OcConversationDao
 import com.meharenterprises.originconnect.data.local.OcDatabase
+import com.meharenterprises.originconnect.data.local.SessionManager
 import com.meharenterprises.originconnect.data.remote.ApiService
+import com.meharenterprises.originconnect.data.remote.AuthInterceptor
+import dagger.Lazy
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -35,9 +38,14 @@ object NetworkModule {
     fun provideContactDao(db: OcDatabase): OcContactDao = db.contactDao()
 
     @Provides @Singleton
-    fun provideOkHttp(): OkHttpClient = OkHttpClient.Builder()
+    fun provideOkHttp(
+        @ApplicationContext ctx: Context,
+        session: SessionManager,
+        apiService: Lazy<ApiService>
+    ): OkHttpClient = OkHttpClient.Builder()
         .connectTimeout(30, TimeUnit.SECONDS)
         .readTimeout(30, TimeUnit.SECONDS)
+        .addInterceptor(AuthInterceptor(session, apiService))
         .addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY })
         .build()
 
