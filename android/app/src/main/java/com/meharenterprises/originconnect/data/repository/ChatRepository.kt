@@ -3,7 +3,6 @@ import com.meharenterprises.originconnect.data.local.OcMessageDao
 import com.meharenterprises.originconnect.data.local.OcMessageEntity
 import com.meharenterprises.originconnect.data.local.SessionManager
 import com.meharenterprises.originconnect.data.model.Message
-import com.meharenterprises.originconnect.data.model.Message
 import com.meharenterprises.originconnect.data.model.*
 import com.meharenterprises.originconnect.data.remote.*
 import javax.inject.Inject
@@ -66,24 +65,6 @@ class ChatRepository @Inject constructor(
 
     suspend fun getMyId() = session.getUserId() ?: ""
 }
-
-private fun Message.toEntity() = OcMessageEntity(
-    id = id, conversationId = conversationId, senderId = senderId,
-    receiverId = receiverId, type = type, content = content,
-    mediaUrl = mediaUrl, mediaThumbnail = mediaThumbnail,
-    replyToId = replyToId, status = status, isDeleted = isDeleted,
-    isDeletedForEveryone = isDeletedForEveryone, isStarred = isStarred,
-    createdAt = createdAt
-)
-
-private fun OcMessageEntity.toMessage() = Message(
-    id = id, conversationId = conversationId, senderId = senderId,
-    receiverId = receiverId, type = type, content = content,
-    mediaUrl = mediaUrl, mediaThumbnail = mediaThumbnail,
-    replyToId = replyToId, status = status, isDeleted = isDeleted,
-    isDeletedForEveryone = isDeletedForEveryone, isStarred = isStarred,
-    createdAt = createdAt
-)
 
 private fun Message.toEntity() = OcMessageEntity(
     id = id, conversationId = conversationId, senderId = senderId,
